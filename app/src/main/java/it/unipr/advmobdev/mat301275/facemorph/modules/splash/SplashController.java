@@ -6,4 +6,8 @@ public class SplashController {
 
     }
 
+    public void viewDidLoad() {
+
+    }
+
 }
