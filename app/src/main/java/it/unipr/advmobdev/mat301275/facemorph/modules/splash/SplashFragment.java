@@ -18,7 +18,7 @@ import it.unipr.advmobdev.mat301275.facemorph.R;
  */
 public class SplashFragment extends Fragment {
 
-    SplashController controller = new SplashController();
+    SplashController controller = new SplashController(this);
 
     public SplashFragment() {
         // Required empty public constructor
