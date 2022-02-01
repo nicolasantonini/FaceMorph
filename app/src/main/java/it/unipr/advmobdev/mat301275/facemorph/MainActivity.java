@@ -1,6 +1,7 @@
 package it.unipr.advmobdev.mat301275.facemorph;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.os.Bundle;
 
