@@ -3,6 +3,7 @@ package it.unipr.advmobdev.mat301275.facemorph.modules.splash;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,5 +50,13 @@ public class SplashFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_splash, container, false);
+    }
+
+    public void navigateToLogin() {
+        NavHostFragment.findNavController(this).navigate(R.id.action_splashFragment_to_loginFragment);
+    }
+
+    public void navigateToHome() {
+        NavHostFragment.findNavController(this).navigate(R.id.action_splashFragment_to_homeFragment);
     }
 }
