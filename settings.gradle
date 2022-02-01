@@ -1,2 +1,3 @@
 include ':app'
 rootProject.name = "FaceMorph"
+include ':openCVLibrary343'
