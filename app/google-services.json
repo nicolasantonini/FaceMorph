@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "860510629114",
+    "project_id": "facemorph-9c344",
+    "storage_bucket": "facemorph-9c344.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:860510629114:android:7009034742f77a5b712d43",
+        "android_client_info": {
+          "package_name": "it.unipr.advmobdev.mat301275.facemorph"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "860510629114-pmeijfi6rgnq9islfo33qktosifb3nhk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnADt_JcdQ45PmF0AjHkl2fRbPLutKqmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "860510629114-pmeijfi6rgnq9islfo33qktosifb3nhk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
