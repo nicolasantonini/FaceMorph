@@ -1,7 +1,11 @@
 package it.unipr.advmobdev.mat301275.facemorph.modules.login;
 
+import android.util.Log;
+
 import java.lang.ref.WeakReference;
 
+import it.unipr.advmobdev.mat301275.facemorph.authentication.AuthenticationManager;
+import it.unipr.advmobdev.mat301275.facemorph.authentication.UserCreateCallback;
 import it.unipr.advmobdev.mat301275.facemorph.modules.splash.SplashFragment;
 
 public class LoginController {
@@ -28,6 +32,17 @@ public class LoginController {
             String email = fragment.getEmail();
             String password = fragment.getPassword();
 
+            AuthenticationManager.getInstance().createUserWithEmailAndPassword(email, password, new UserCreateCallback() {
+                @Override
+                public void userCreateSuccess() {
+                    Log.i("Nic", "Utente creato");
+                }
+
+                @Override
+                public void userCreateFailure(Exception exception) {
+                    Log.i("Nic", "Utente NON creato");
+                }
+            });
         }
     }
 
