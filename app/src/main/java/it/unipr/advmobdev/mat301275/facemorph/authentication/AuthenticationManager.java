@@ -1,14 +1,7 @@
 package it.unipr.advmobdev.mat301275.facemorph.authentication;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.util.concurrent.Executor;
 
 public class AuthenticationManager {
 
@@ -46,15 +39,25 @@ public class AuthenticationManager {
     }
 
     public void createUserWithEmailAndPassword(String email, String password, UserCreateCallback callback) {
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener((Executor) this, task -> {
-                    if (task.isSuccessful()) {
-                        callback.userCreateSuccess();
-                    } else {
-                        Exception exception = task.getException();
-                        callback.userCreateFailure(exception);
-                    }
-                });
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                callback.userCreateSuccess();
+            } else {
+                Exception exc = task.getException();
+                callback.userCreateFailure(exc);
+            }
+        });
+    }
+
+    public void loginWithEmailAndPassword(String email, String password, UserLoginCallback callback) {
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                callback.userLoginSuccess();
+            } else {
+                Exception exc = task.getException();
+                callback.userLoginFailure(exc);
+            }
+        });
     }
 
 }

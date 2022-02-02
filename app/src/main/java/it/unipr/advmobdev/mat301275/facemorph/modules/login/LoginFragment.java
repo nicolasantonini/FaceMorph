@@ -5,12 +5,14 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import it.unipr.advmobdev.mat301275.facemorph.R;
 import it.unipr.advmobdev.mat301275.facemorph.modules.preview.PreviewFragment;
@@ -80,6 +82,28 @@ public class LoginFragment extends Fragment {
 
     public String getPassword() {
         return passwordEditText.getText().toString();
+    }
+
+    public void displayToast(String string) {
+        Toast.makeText(getActivity(), string, Toast.LENGTH_SHORT).show();
+    }
+
+    public void disableInteraction() {
+        signupButton.setEnabled(false);
+        loginButton.setEnabled(false);
+        passwordEditText.setEnabled(false);
+        emailEditText.setEnabled(false);
+    }
+
+    public void enableInteraction() {
+        signupButton.setEnabled(true);
+        loginButton.setEnabled(true);
+        passwordEditText.setEnabled(true);
+        emailEditText.setEnabled(true);
+    }
+
+    public void navigateToHome() {
+        NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_homeFragment);
     }
 
 
