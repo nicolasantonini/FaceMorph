@@ -62,8 +62,8 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         loginButton = (Button) getView().findViewById(R.id.login_button);
         signupButton = (Button) getView().findViewById(R.id.signup_button);
-        emailEditText = (EditText) getView().findViewById(R.id.mail_text_field);
-        passwordEditText = (EditText) getView().findViewById(R.id.password_text_field);
+        emailEditText = (EditText) getView().findViewById(R.id.mail_edit_text);
+        passwordEditText = (EditText) getView().findViewById(R.id.password_edit_text);
 
         loginButton.setOnClickListener( buttonView -> {
             this.controller.loginClicked();

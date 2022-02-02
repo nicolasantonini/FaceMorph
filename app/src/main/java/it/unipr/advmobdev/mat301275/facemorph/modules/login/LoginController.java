@@ -6,7 +6,6 @@ import java.lang.ref.WeakReference;
 
 import it.unipr.advmobdev.mat301275.facemorph.authentication.AuthenticationManager;
 import it.unipr.advmobdev.mat301275.facemorph.authentication.UserCreateCallback;
-import it.unipr.advmobdev.mat301275.facemorph.modules.splash.SplashFragment;
 
 public class LoginController {
 
