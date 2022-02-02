@@ -4,7 +4,7 @@ import java.lang.ref.WeakReference;
 
 public class SplashController {
 
-    WeakReference<SplashFragment> weakFragment = null;
+    private WeakReference<SplashFragment> weakFragment = null;
 
     public SplashController(SplashFragment fragment) {
         weakFragment = new WeakReference<>(fragment);
