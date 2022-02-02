@@ -1,14 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".modules.home.HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+<com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/camera_button"
+    android:layout_width="82dp"
+    android:layout_height="82dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    android:layout_marginBottom="32dp"
+    app:tint="@color/white"
+    android:src="@drawable/ic_camera"
+    app:fabCustomSize="82dp"
+    android:backgroundTint="@color/purple_500"
+    app:maxImageSize="28dp"
+    android:contentDescription="@string/camera_button">
+
+</com.google.android.material.floatingactionbutton.FloatingActionButton>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/gallery_button"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginBottom="32dp"
+        app:tint="@color/purple_500"
+        android:src="@drawable/ic_portrait"
+        android:layout_marginLeft="16dp"
+        app:fabCustomSize="72dp"
+        android:background="@null"
+        app:backgroundTint="@android:color/transparent"
+        android:elevation="0dp"
+        app:elevation="0dp"
+        app:maxImageSize="54dp"
+        android:contentDescription="@string/camera_button">
+
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/settings_button"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="32dp"
+        app:tint="@color/purple_500"
+        android:src="@drawable/ic_list"
+        app:fabCustomSize="72dp"
+        android:background="@null"
+        app:backgroundTint="@android:color/transparent"
+        android:elevation="0dp"
+        app:elevation="0dp"
+        android:layout_marginRight="16dp"
+        app:maxImageSize="54dp"
+        android:contentDescription="@string/camera_button">
+
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
