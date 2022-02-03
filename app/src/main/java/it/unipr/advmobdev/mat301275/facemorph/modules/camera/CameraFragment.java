@@ -18,6 +18,8 @@ import it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryFragment;
  */
 public class CameraFragment extends Fragment {
 
+    private CameraController controller = new CameraController(this);
+
     public CameraFragment() {
         // Required empty public constructor
     }
@@ -46,6 +48,10 @@ public class CameraFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        CameraCallback callback = CameraFragmentArgs.fromBundle(getArguments()).getCallback();
+        controller.setCallback(callback);
         return inflater.inflate(R.layout.fragment_camera, container, false);
     }
+
+
 }

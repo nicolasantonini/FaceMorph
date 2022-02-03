@@ -77,7 +77,12 @@
         android:id="@+id/cameraFragment"
         android:name="it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraFragment"
         android:label="fragment_camera"
-        tools:layout="@layout/fragment_camera" />
+        tools:layout="@layout/fragment_camera" >
+        <argument
+            android:name="callback"
+            app:argType="it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraCallback"
+            app:nullable="true" />
+    </fragment>
     <fragment
         android:id="@+id/previewFragment"
         android:name="it.unipr.advmobdev.mat301275.facemorph.modules.preview.PreviewFragment"

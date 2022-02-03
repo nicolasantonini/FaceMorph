@@ -43,7 +43,7 @@ public class SplashFragment extends Fragment {
         if (getArguments() != null) {
 
         }
-        controller.viewDidLoad();
+        controller.viewDidLoad(getContext());
     }
 
     @Override

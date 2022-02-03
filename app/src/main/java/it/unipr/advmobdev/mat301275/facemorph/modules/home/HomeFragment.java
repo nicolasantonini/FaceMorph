@@ -5,8 +5,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.os.Parcel;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +20,7 @@ import android.widget.EditText;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import it.unipr.advmobdev.mat301275.facemorph.R;
+import it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraCallback;
 
 
 /**
@@ -75,8 +80,9 @@ public class HomeFragment extends Fragment {
         settingsButton.setOnClickListener(v -> controller.settingsPressed());
     }
 
-    public void navigateToCamera() {
-        NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_cameraFragment);
+    public void navigateToCamera(CameraCallback callback) {
+        HomeFragmentDirections.ActionHomeFragmentToCameraFragment action = HomeFragmentDirections.actionHomeFragmentToCameraFragment(callback);
+        NavHostFragment.findNavController(this).navigate(action);
     }
 
     public void navigateToSettings() {
