@@ -1,5 +1,6 @@
 package it.unipr.advmobdev.mat301275.facemorph.modules.home;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.util.Log;
 
@@ -22,10 +23,11 @@ public class HomeController {
     public void cameraPressed() {
         HomeFragment fragment = weakFragment.get();
         if (fragment != null) {
+
             fragment.navigateToCamera(new CameraCallback() {
                 @Override
-                public void imageSelected() {
-                    Log.i("Nic", "Photo selected");
+                public void imageTaken(Bitmap bitmap) {
+                    Log.i("Nic", "Image taken");
                 }
 
                 @Override
@@ -34,9 +36,7 @@ public class HomeController {
                 }
 
                 @Override
-                public void writeToParcel(Parcel dest, int flags) {
-
-                }
+                public void writeToParcel(Parcel dest, int flags) { }
             });
         }
     }

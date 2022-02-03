@@ -20,6 +20,8 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import org.opencv.android.CameraBridgeViewBase;
@@ -46,6 +48,8 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
 
     private CameraController controller = new CameraController(this);
     private CameraBridgeViewBase mOpenCvCameraView;
+
+    private Button takePictureButton;
 
     private Mat mRgba;
     private Mat mRgbaF;
@@ -88,6 +92,13 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.mOpenCvCameraView = getView().findViewById(R.id.camera_preview);
+        takePictureButton = (Button) getView().findViewById(R.id.take_a_photo_button);
+
+        takePictureButton.setOnClickListener( buttonView -> {
+            if (mRgba != null) {
+                this.controller.photoTaken(mRgba);
+            }
+        });
         OpenCVLoader.initDebug();
         mPermissionResult.launch(Manifest.permission.CAMERA);
     }
@@ -111,37 +122,9 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
         Core.transpose(mRgbaF, mRgbaT);
         Core.flip(mRgbaT,mRgbaF,1);
         Imgproc.resize(mRgbaF, mRgba, mRgba.size(), 0,0, 0);
+        //final Bitmap bitmap = Bitmap.createBitmap(mRgba.cols(), mRgba.rows(), Bitmap.Config.RGB_565);
+        //Utils.matToBitmap(mRgba, bitmap);
 
-        final Bitmap bitmap =
-                Bitmap.createBitmap(mRgba.cols(), mRgba.rows(), Bitmap.Config.RGB_565);
-        Utils.matToBitmap(mRgba, bitmap);
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream .toByteArray();
-
-        Bitmap d = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-
-
-        //mRgba = Imgcodecs.imdecode(new MatOfByte(byteArray),Imgcodecs.IMREAD_UNCHANGED);
-
-        Utils.bitmapToMat(d, mRgba);
-
-        /*
-
-        Bitmap image = Bitmap.createBitmap(mRgba.cols(), mRgba.rows(), Bitmap.Config.RGB_565);
-        Utils.matToBitmap(mRgba, image);
-
-        Bitmap bitmap = (Bitmap) image;
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream .toByteArray();
-
-
-        mRgba = Imgcodecs.imdecode(new MatOfByte(byteArray),Imgcodecs.IMREAD_UNCHANGED);
-
-        */
 
         return mRgba;
     }
