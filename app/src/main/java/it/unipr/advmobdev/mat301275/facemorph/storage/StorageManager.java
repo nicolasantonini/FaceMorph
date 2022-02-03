@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import it.unipr.advmobdev.mat301275.facemorph.entities.UserImage;
+
 
 public class StorageManager {
     private static StorageManager instance = null;
@@ -22,7 +24,7 @@ public class StorageManager {
 
     private FirebaseFirestore db;
 
-    public void addImage(String userId, Bitmap bitmap) {
+    public void addImage(String userId, UserImage bitmap) {
 
     }
 
