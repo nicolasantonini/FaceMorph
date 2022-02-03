@@ -23,13 +23,17 @@ public class SplashController {
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0, context, new LoaderCallbackInterface() {
             @Override
             public void onManagerConnected(int status) {
-                SplashFragment fragment = weakFragment.get();
-                if (fragment != null) {
-                    if (AuthenticationManager.getInstance().isUserSignedIn()) {
-                        fragment.navigateToHome();
-                    } else {
-                        fragment.navigateToLogin();
+                if (status == LoaderCallbackInterface.SUCCESS) {
+                    SplashFragment fragment = weakFragment.get();
+                    if (fragment != null) {
+                        if (AuthenticationManager.getInstance().isUserSignedIn()) {
+                            fragment.navigateToHome();
+                        } else {
+                            fragment.navigateToLogin();
+                        }
                     }
+                } else {
+                    Log.e("FaceMorph", "Unable to load OpenCV");
                 }
             }
 

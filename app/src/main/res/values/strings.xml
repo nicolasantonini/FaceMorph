@@ -10,4 +10,5 @@
     <string name="password">password</string>
     <string name="signup">signup</string>
     <string name="camera_button">Camera button</string>
+    <string name="take_a_photo">Take a photo</string>
 </resources>
