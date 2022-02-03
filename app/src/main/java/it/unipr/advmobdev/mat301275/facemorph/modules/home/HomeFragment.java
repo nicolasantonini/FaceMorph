@@ -96,4 +96,8 @@ public class HomeFragment extends Fragment {
     public void navigateToPreview() {
         NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_previewFragment);
     }
+
+    public void popFragment() {
+        NavHostFragment.findNavController(this).popBackStack();
+    }
 }

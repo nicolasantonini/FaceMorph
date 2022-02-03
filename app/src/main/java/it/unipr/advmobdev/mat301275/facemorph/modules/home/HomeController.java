@@ -28,6 +28,7 @@ public class HomeController {
                 @Override
                 public void imageTaken(Bitmap bitmap) {
                     Log.i("Nic", "Image taken");
+                    fragment.popFragment();
                 }
 
                 @Override

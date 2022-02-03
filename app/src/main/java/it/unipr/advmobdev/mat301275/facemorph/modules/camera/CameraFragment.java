@@ -122,10 +122,6 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
         Core.transpose(mRgbaF, mRgbaT);
         Core.flip(mRgbaT,mRgbaF,1);
         Imgproc.resize(mRgbaF, mRgba, mRgba.size(), 0,0, 0);
-        //final Bitmap bitmap = Bitmap.createBitmap(mRgba.cols(), mRgba.rows(), Bitmap.Config.RGB_565);
-        //Utils.matToBitmap(mRgba, bitmap);
-
-
         return mRgba;
     }
 
