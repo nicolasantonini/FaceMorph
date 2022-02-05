@@ -6,8 +6,12 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
+import it.unipr.advmobdev.mat301275.facemorph.authentication.AuthenticationManager;
+import it.unipr.advmobdev.mat301275.facemorph.entities.UserImage;
 import it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraCallback;
 import it.unipr.advmobdev.mat301275.facemorph.modules.login.LoginFragment;
+import it.unipr.advmobdev.mat301275.facemorph.storage.CreateCallback;
+import it.unipr.advmobdev.mat301275.facemorph.storage.StorageManager;
 
 
 public class HomeController {
@@ -29,15 +33,21 @@ public class HomeController {
                 public void imageTaken(Bitmap bitmap) {
                     Log.i("Nic", "Image taken");
                     fragment.popFragment();
-                }
 
-                @Override
-                public int describeContents() {
-                    return 0;
-                }
+                    String userId = AuthenticationManager.getInstance().getUserId();
+                    UserImage image = new UserImage(bitmap);
+                    StorageManager.getInstance().addImage(userId, image, new CreateCallback() {
+                        @Override
+                        public void createSuccess() {
+                            Log.i("Nic", "Immagine salvata");
+                        }
 
-                @Override
-                public void writeToParcel(Parcel dest, int flags) { }
+                        @Override
+                        public void createFailed(Exception e) {
+                            fragment.displayToast(e.getLocalizedMessage());
+                        }
+                    });
+                }
             });
         }
     }

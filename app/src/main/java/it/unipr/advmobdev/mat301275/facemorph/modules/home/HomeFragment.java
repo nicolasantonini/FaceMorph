@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -99,5 +100,9 @@ public class HomeFragment extends Fragment {
 
     public void popFragment() {
         NavHostFragment.findNavController(this).popBackStack();
+    }
+
+    public void displayToast(String string) {
+        Toast.makeText(getActivity(), string, Toast.LENGTH_SHORT).show();
     }
 }

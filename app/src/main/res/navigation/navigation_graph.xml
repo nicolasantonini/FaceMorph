@@ -67,12 +67,22 @@
         android:id="@+id/galleryFragment"
         android:name="it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryFragment"
         android:label="fragment_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        tools:layout="@layout/fragment_gallery" >
+        <action
+            android:id="@+id/action_galleryFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="it.unipr.advmobdev.mat301275.facemorph.modules.settings.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/homeFragment"/>
+    </fragment>
     <fragment
         android:id="@+id/cameraFragment"
         android:name="it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraFragment"

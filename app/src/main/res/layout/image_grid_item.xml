@@ -1,0 +1,8 @@
+<it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryViewItem xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_image"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scaleType="centerCrop"
+    android:layout_margin="8dp"
+    android:src="@drawable/ic_portrait" >
+</it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryViewItem>

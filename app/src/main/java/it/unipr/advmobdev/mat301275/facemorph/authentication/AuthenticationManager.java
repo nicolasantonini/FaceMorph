@@ -29,10 +29,10 @@ public class AuthenticationManager {
         }
     }
 
-    public String getUserEmail() {
+    public String getUserId() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            return currentUser.getEmail();
+            return currentUser.getUid();
         } else {
             return null;
         }
@@ -58,6 +58,10 @@ public class AuthenticationManager {
                 callback.userLoginFailure(exc);
             }
         });
+    }
+
+    public void logout() {
+        mAuth.signOut();
     }
 
 }
