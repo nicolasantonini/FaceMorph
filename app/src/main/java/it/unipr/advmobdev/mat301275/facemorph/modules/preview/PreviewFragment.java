@@ -2,18 +2,22 @@ package it.unipr.advmobdev.mat301275.facemorph.modules.preview;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+
 import it.unipr.advmobdev.mat301275.facemorph.R;
+import it.unipr.advmobdev.mat301275.facemorph.modules.bluetooth.BluetoothCallback;
+import it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraCallback;
+import it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryCallback;
+import it.unipr.advmobdev.mat301275.facemorph.modules.result.ResultAttachment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,7 +62,7 @@ public class PreviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         PreviewAttachment attachment = PreviewFragmentArgs.fromBundle(getArguments()).getBitmap();
-        controller.setBitmap(attachment.getBitmap());
+        controller.setUserBitmap(attachment.getBitmap());
         return inflater.inflate(R.layout.fragment_preview, container, false);
     }
 
@@ -77,5 +81,25 @@ public class PreviewFragment extends Fragment {
 
     public void setImage(Bitmap image) {
         previewImageView.setImageBitmap(image);
+    }
+
+    public void navigateToGallery(GalleryCallback callback) {
+        PreviewFragmentDirections.ActionPreviewFragmentToGalleryFragment action = PreviewFragmentDirections.actionPreviewFragmentToGalleryFragment(callback);
+        NavHostFragment.findNavController(this).navigate(action);
+    }
+
+    public void navigateToCamera(CameraCallback callback) {
+        PreviewFragmentDirections.ActionPreviewFragmentToCameraFragment action = PreviewFragmentDirections.actionPreviewFragmentToCameraFragment(callback);
+        NavHostFragment.findNavController(this).navigate(action);
+    }
+
+    public void navigateToBluetooth(BluetoothCallback callback) {
+        PreviewFragmentDirections.ActionPreviewFragmentToBluetoothFragment action = PreviewFragmentDirections.actionPreviewFragmentToBluetoothFragment(callback);
+        NavHostFragment.findNavController(this).navigate(action);
+    }
+
+    public void navigateToResult(ResultAttachment attachment) {
+        PreviewFragmentDirections.ActionPreviewFragmentToResultFragment action = PreviewFragmentDirections.actionPreviewFragmentToResultFragment(attachment);
+        NavHostFragment.findNavController(this).navigate(action);
     }
 }
