@@ -54,6 +54,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
     private Mat mRgba;
     private Mat mRgbaF;
     private Mat mRgbaT;
+    private Mat mRgbaSnap;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -96,7 +97,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
 
         takePictureButton.setOnClickListener( buttonView -> {
             if (mRgba != null) {
-                this.controller.photoTaken(mRgba);
+                this.controller.photoTaken(mRgbaSnap);
             }
         });
         OpenCVLoader.initDebug();
@@ -108,6 +109,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
         mRgba = new Mat(height, width, CvType.CV_8UC4);
         mRgbaF = new Mat(height, width, CvType.CV_8UC4);
         mRgbaT = new Mat(width, width, CvType.CV_8UC4);
+        mRgbaSnap = new Mat(height, width, CvType.CV_8UC4);
     }
 
     @Override
@@ -122,6 +124,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
         Core.transpose(mRgbaF, mRgbaT);
         Core.flip(mRgbaT,mRgbaF,1);
         Imgproc.resize(mRgbaF, mRgba, mRgba.size(), 0,0, 0);
+        mRgba.copyTo(mRgbaSnap);
         return mRgba;
     }
 
