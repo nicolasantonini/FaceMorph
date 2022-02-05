@@ -17,10 +17,19 @@ import it.unipr.advmobdev.mat301275.facemorph.storage.StorageManager;
 
 public class GalleryController {
 
+    private GalleryCallback callback;
     private WeakReference<GalleryFragment> weakFragment = null;
 
     public GalleryController(GalleryFragment fragment) {
         weakFragment = new WeakReference<>(fragment);
+    }
+
+    public void setCallback(GalleryCallback callback) {
+        this.callback = callback;
+    }
+
+    public void userImageSelected(UserImage userImage) {
+        callback.imageSelected(userImage.getBitmap());
     }
 
     public void viewCreated() {
@@ -90,6 +99,11 @@ public class GalleryController {
                             fragment.enableInteraction();
                         }
                     });
+                }
+
+                @Override
+                public boolean isSelectFromGalleryEnabled() {
+                    return false;
                 }
             });
         }

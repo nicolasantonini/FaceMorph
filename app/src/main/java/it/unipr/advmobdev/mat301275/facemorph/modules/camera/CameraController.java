@@ -7,6 +7,7 @@ import org.opencv.core.Mat;
 
 import java.lang.ref.WeakReference;
 
+import it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryCallback;
 import it.unipr.advmobdev.mat301275.facemorph.modules.home.HomeFragment;
 
 public class CameraController {
@@ -40,6 +41,25 @@ public class CameraController {
         final Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.RGB_565);
         Utils.matToBitmap(mat, bitmap);
         callback.imageTaken(bitmap);
+    }
+
+    public void viewCreated() {
+        CameraFragment fragment = weakFragment.get();
+        if (fragment != null) {
+            if (!callback.isSelectFromGalleryEnabled()) {
+                fragment.hideSelectFromGallery();
+            }
+        }
+    }
+
+    public void galleryPressed() {
+        CameraFragment fragment = weakFragment.get();
+        if (fragment != null) {
+            fragment.navigateToGallery(bitmap -> {
+                fragment.popFragment();
+                callback.imageTaken(bitmap);
+            });
+        }
     }
 
 }

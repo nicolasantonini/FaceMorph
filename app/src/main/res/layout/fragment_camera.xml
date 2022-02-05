@@ -33,6 +33,21 @@
 
     </Button>
 
+    <Button
+        android:id="@+id/select_from_gallery_button"
+        android:layout_width="0dp"
+        android:layout_height="54dp"
+        opencv:layout_constraintLeft_toLeftOf="parent"
+        opencv:layout_constraintRight_toRightOf="parent"
+        opencv:layout_constraintBottom_toTopOf="@id/take_a_photo_button"
+        android:text="@string/select_from_gallery"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginLeft="32dp"
+        >
+
+    </Button>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,9 @@ import java.lang.ref.WeakReference;
 import it.unipr.advmobdev.mat301275.facemorph.authentication.AuthenticationManager;
 import it.unipr.advmobdev.mat301275.facemorph.entities.UserImage;
 import it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraCallback;
+import it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryCallback;
 import it.unipr.advmobdev.mat301275.facemorph.modules.login.LoginFragment;
+import it.unipr.advmobdev.mat301275.facemorph.modules.preview.PreviewAttachment;
 import it.unipr.advmobdev.mat301275.facemorph.storage.CreateCallback;
 import it.unipr.advmobdev.mat301275.facemorph.storage.StorageManager;
 
@@ -34,6 +36,9 @@ public class HomeController {
                     Log.i("Nic", "Image taken");
                     fragment.popFragment();
 
+                    fragment.navigateToPreview(new PreviewAttachment(bitmap));
+
+                    /*
                     String userId = AuthenticationManager.getInstance().getUserId();
                     UserImage image = new UserImage(bitmap);
                     StorageManager.getInstance().addImage(userId, image, new CreateCallback() {
@@ -47,6 +52,12 @@ public class HomeController {
                             fragment.displayToast(e.getLocalizedMessage());
                         }
                     });
+                     */
+                }
+
+                @Override
+                public boolean isSelectFromGalleryEnabled() {
+                    return true;
                 }
             });
         }
@@ -62,7 +73,9 @@ public class HomeController {
     public void galleryPressed() {
         HomeFragment fragment = weakFragment.get();
         if (fragment != null) {
-            fragment.navigateToGallery();
+            fragment.navigateToGallery(bitmap -> {
+                //Nothing to do
+            });
         }
     }
 

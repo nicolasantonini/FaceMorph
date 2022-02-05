@@ -18,7 +18,8 @@ import it.unipr.advmobdev.mat301275.facemorph.entities.UserImage;
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
     private static final String TAG = "CustomAdapter";
 
-    private List<UserImage> images;
+    private GalleryAdapterCallback callback;
+    public List<UserImage> images;
 
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
@@ -26,9 +27,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView imageView;
 
-        public ViewHolder(View v) {
+        public ViewHolder(View v, GalleryViewHolderCallback callback) {
             super(v);
-            v.setOnClickListener(v1 -> Log.d(TAG, "Element " + getAdapterPosition() + " clicked."));
+            v.setOnClickListener(v1 -> {
+                callback.indexSelected(getAdapterPosition());
+                    });
             imageView = v.findViewById(R.id.item_image);
         }
 
@@ -36,9 +39,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             return imageView;
         }
     }
-    // END_INCLUDE(recyclerViewSampleViewHolder)
 
-    public GalleryAdapter() {
+    public GalleryAdapter(GalleryAdapterCallback callback) {
+        this.callback = callback;
         this.images = new ArrayList<>();
     }
 
@@ -53,19 +56,19 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.image_grid_item, parent, false);
 
-        return new ViewHolder(v);
+        return new ViewHolder(v, new GalleryViewHolderCallback() {
+            @Override
+            public void indexSelected(int index) {
+                callback.userImageSelected(images.get(index));
+            }
+        });
     }
 
-    // BEGIN_INCLUDE(recyclerViewOnBindViewHolder)
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        Log.d(TAG, "Element " + position + " set.");
         viewHolder.getImageView().setImageBitmap(this.images.get(position).getBitmap());
     }
-    // END_INCLUDE(recyclerViewOnBindViewHolder)
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return images.size();

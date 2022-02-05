@@ -7,6 +7,8 @@ import android.os.Parcelable;
 public interface CameraCallback extends Parcelable {
     void imageTaken(Bitmap bitmap);
 
+    boolean isSelectFromGalleryEnabled();
+
     @Override
     default int describeContents() {
         return 0;

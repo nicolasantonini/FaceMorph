@@ -37,7 +37,9 @@ import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayOutputStream;
 
 import it.unipr.advmobdev.mat301275.facemorph.R;
+import it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryCallback;
 import it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryFragment;
+import it.unipr.advmobdev.mat301275.facemorph.modules.home.HomeFragmentDirections;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,6 +52,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
     private CameraBridgeViewBase mOpenCvCameraView;
 
     private Button takePictureButton;
+    private Button selectFromGalleryButton;
 
     private Mat mRgba;
     private Mat mRgbaF;
@@ -94,6 +97,11 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
         super.onViewCreated(view, savedInstanceState);
         this.mOpenCvCameraView = getView().findViewById(R.id.camera_preview);
         takePictureButton = (Button) getView().findViewById(R.id.take_a_photo_button);
+        selectFromGalleryButton = (Button) getView().findViewById(R.id.select_from_gallery_button);
+
+        selectFromGalleryButton.setOnClickListener(v -> {
+            controller.galleryPressed();
+        });
 
         takePictureButton.setOnClickListener( buttonView -> {
             if (mRgba != null) {
@@ -101,7 +109,13 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
             }
         });
         OpenCVLoader.initDebug();
+
+        controller.viewCreated();
         mPermissionResult.launch(Manifest.permission.CAMERA);
+    }
+
+    public void hideSelectFromGallery() {
+        selectFromGalleryButton.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -145,8 +159,18 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
         mOpenCvCameraView.enableView();
     }
 
+    public void popFragment() {
+        NavHostFragment.findNavController(this).popBackStack();
+    }
+
+
     public void quit() {
         NavHostFragment.findNavController(this).popBackStack();
+    }
+
+    public void navigateToGallery(GalleryCallback callback) {
+        CameraFragmentDirections.ActionCameraFragmentToGalleryFragment action = CameraFragmentDirections.actionCameraFragmentToGalleryFragment(callback);
+        NavHostFragment.findNavController(this).navigate(action);
     }
 
 }

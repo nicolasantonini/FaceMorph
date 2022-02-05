@@ -76,6 +76,9 @@
             app:popEnterAnim="@anim/stationary"
             app:popExitAnim="@anim/fade_out"
             />
+        <argument
+            android:name="callback"
+            app:argType="it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryCallback" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -97,6 +100,9 @@
             android:name="callback"
             app:argType="it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraCallback"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_cameraFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
     </fragment>
     <fragment
         android:id="@+id/previewFragment"
@@ -112,6 +118,9 @@
         <action
             android:id="@+id/action_previewFragment_to_resultFragment"
             app:destination="@id/resultFragment" />
+        <argument
+            android:name="bitmap"
+            app:argType="it.unipr.advmobdev.mat301275.facemorph.modules.preview.PreviewAttachment" />
     </fragment>
     <fragment
         android:id="@+id/bluetoothFragment"

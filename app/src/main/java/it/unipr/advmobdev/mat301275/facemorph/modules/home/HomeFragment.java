@@ -22,6 +22,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import it.unipr.advmobdev.mat301275.facemorph.R;
 import it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraCallback;
+import it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryCallback;
+import it.unipr.advmobdev.mat301275.facemorph.modules.preview.PreviewAttachment;
 
 
 /**
@@ -90,8 +92,14 @@ public class HomeFragment extends Fragment {
         NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_settingsFragment);
     }
 
-    public void navigateToGallery() {
-        NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_galleryFragment);
+    public void navigateToGallery(GalleryCallback callback) {
+        HomeFragmentDirections.ActionHomeFragmentToGalleryFragment action = HomeFragmentDirections.actionHomeFragmentToGalleryFragment(callback);
+        NavHostFragment.findNavController(this).navigate(action);
+    }
+
+    public void navigateToPreview(PreviewAttachment previewAttachment) {
+        HomeFragmentDirections.ActionHomeFragmentToPreviewFragment action = HomeFragmentDirections.actionHomeFragmentToPreviewFragment(previewAttachment);
+        NavHostFragment.findNavController(this).navigate(action);
     }
 
     public void navigateToPreview() {

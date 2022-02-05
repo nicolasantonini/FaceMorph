@@ -25,6 +25,7 @@ import java.util.List;
 import it.unipr.advmobdev.mat301275.facemorph.R;
 import it.unipr.advmobdev.mat301275.facemorph.entities.UserImage;
 import it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraCallback;
+import it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraFragmentArgs;
 import it.unipr.advmobdev.mat301275.facemorph.modules.home.HomeFragmentDirections;
 
 /**
@@ -71,6 +72,8 @@ public class GalleryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        GalleryCallback callback = GalleryFragmentArgs.fromBundle(getArguments()).getCallback();
+        controller.setCallback(callback);
         return inflater.inflate(R.layout.fragment_gallery, container, false);
     }
 
@@ -85,7 +88,9 @@ public class GalleryFragment extends Fragment {
         mProgressBar = (ProgressBar) getView().findViewById(R.id.gallery_progress_bar);
         mLayoutManager = new GridLayoutManager(getContext(), 2);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new GalleryAdapter();
+        mAdapter = new GalleryAdapter(userImage -> {
+            controller.userImageSelected(userImage);
+        });
         mRecyclerView.setAdapter(mAdapter);
         controller.viewCreated();
     }
