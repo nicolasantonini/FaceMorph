@@ -35,6 +35,7 @@ public class PreviewController {
             fragment.navigateToCamera(new CameraCallback() {
                 @Override
                 public void imageTaken(Bitmap bitmap) {
+                    fragment.popFragment();
                     ResultAttachment attachment = new ResultAttachment(userBitmap, bitmap);
                     fragment.navigateToResult(attachment);
                 }
@@ -51,6 +52,7 @@ public class PreviewController {
         PreviewFragment fragment = weakFragment.get();
         if (fragment != null) {
             fragment.navigateToGallery(bitmap -> {
+                fragment.popFragment();
                 ResultAttachment attachment = new ResultAttachment(userBitmap, bitmap);
                 fragment.navigateToResult(attachment);
             });
@@ -63,6 +65,7 @@ public class PreviewController {
             fragment.navigateToBluetooth(new BluetoothCallback() {
                 @Override
                 public void bleRetrieveSuccess(Bitmap bitmap) {
+                    fragment.popFragment();
                     ResultAttachment attachment = new ResultAttachment(userBitmap, bitmap);
                     fragment.navigateToResult(attachment);
                 }

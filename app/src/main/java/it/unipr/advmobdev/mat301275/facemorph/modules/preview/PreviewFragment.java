@@ -102,4 +102,9 @@ public class PreviewFragment extends Fragment {
         PreviewFragmentDirections.ActionPreviewFragmentToResultFragment action = PreviewFragmentDirections.actionPreviewFragmentToResultFragment(attachment);
         NavHostFragment.findNavController(this).navigate(action);
     }
+
+    public void popFragment() {
+        NavHostFragment.findNavController(this).popBackStack();
+    }
+
 }
