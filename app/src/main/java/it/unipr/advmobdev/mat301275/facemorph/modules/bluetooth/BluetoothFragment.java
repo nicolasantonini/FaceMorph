@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import it.unipr.advmobdev.mat301275.facemorph.R;
 import it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraFragment;
 
@@ -16,7 +18,7 @@ import it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraFragment;
  * Use the {@link BluetoothFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BluetoothFragment extends Fragment {
+public class BluetoothFragment extends BottomSheetDialogFragment {
 
     public BluetoothFragment() {
         // Required empty public constructor
