@@ -12,7 +12,7 @@ public class Utilities {
     public static byte[] bitmapToByteArray(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        return byteArrayOutputStream .toByteArray();
+        return byteArrayOutputStream.toByteArray();
     }
 
     public static Bitmap byteArrayToBitmap(byte[] bytes) {

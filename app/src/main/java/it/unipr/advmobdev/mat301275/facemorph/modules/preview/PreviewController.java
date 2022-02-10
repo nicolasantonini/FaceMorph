@@ -64,6 +64,11 @@ public class PreviewController {
         if (fragment != null) {
             fragment.navigateToBluetooth(new BluetoothCallback() {
                 @Override
+                public Bitmap getBitmap() {
+                    return userBitmap;
+                }
+
+                @Override
                 public void bleRetrieveSuccess(Bitmap bitmap) {
                     fragment.popFragment();
                     ResultAttachment attachment = new ResultAttachment(userBitmap, bitmap);
@@ -72,16 +77,6 @@ public class PreviewController {
 
                 @Override
                 public void bleRetrieveFailed(Exception e) {
-
-                }
-
-                @Override
-                public void bleRetrieveUpdatedStatus(int newStatus) {
-
-                }
-
-                @Override
-                public void bleRetrieveUpdatedProgress(int progress) {
 
                 }
             });

@@ -21,4 +21,7 @@
     <string name="continue_with_gallery">Continue with Gallery</string>
     <string name="continue_with_camera">Continue with Camera</string>
     <string name="continue_with_bluetooth">Continue with Bluetooth</string>
+    <string name="join">Join</string>
+    <string name="host">Host</string>
+    <string name="cancel">Cancel</string>
 </resources>

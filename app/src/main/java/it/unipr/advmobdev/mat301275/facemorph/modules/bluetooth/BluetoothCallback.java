@@ -5,10 +5,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public interface BluetoothCallback extends Parcelable {
+    Bitmap getBitmap();
     void bleRetrieveSuccess(Bitmap bitmap);
     void bleRetrieveFailed(Exception e);
-    void bleRetrieveUpdatedStatus(int newStatus);
-    void bleRetrieveUpdatedProgress(int progress);
 
     @Override
     default int describeContents() {
