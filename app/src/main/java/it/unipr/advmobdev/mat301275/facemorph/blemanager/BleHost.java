@@ -134,6 +134,10 @@ public class BleHost {
             mAdvertiser.stopAdvertising(advertiseCallback);
         }
 
+        if (mBluetoothGattServer != null) {
+            mBluetoothGattServer.close();
+        }
+
     }
 
     private AdvertiseCallback advertiseCallback = new AdvertiseCallback() {

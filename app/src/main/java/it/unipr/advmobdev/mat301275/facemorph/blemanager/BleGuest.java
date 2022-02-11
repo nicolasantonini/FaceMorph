@@ -104,6 +104,11 @@ public class BleGuest {
             mBluetoothLeScanner.stopScan(scanCallback);
         }
 
+        if (bluetoothGatt != null) {
+            bluetoothGatt.disconnect();
+            bluetoothGatt.close();
+        }
+
     }
 
     private ScanCallback scanCallback = new ScanCallback() {
@@ -176,6 +181,7 @@ public class BleGuest {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
+            bluetoothGatt = gatt;
             Log.i("BleNick", "Notifica dato");
             if (rcvSize == -1) {
                 ByteBuffer wrapped = ByteBuffer.wrap(characteristic.getValue());
