@@ -108,7 +108,6 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
                 this.controller.photoTaken(mRgbaSnap);
             }
         });
-        OpenCVLoader.initDebug();
 
         controller.viewCreated();
         mPermissionResult.launch(Manifest.permission.CAMERA);

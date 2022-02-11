@@ -20,35 +20,38 @@ public class SplashController {
     }
 
     public void viewDidLoad(Context context) {
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0, context, new LoaderCallbackInterface() {
-            @Override
-            public void onManagerConnected(int status) {
-                if (status == LoaderCallbackInterface.SUCCESS) {
-                    SplashFragment fragment = weakFragment.get();
-                    if (fragment != null) {
-                        if (AuthenticationManager.getInstance().isUserSignedIn()) {
-                            fragment.navigateToHome();
-                        } else {
-                            fragment.navigateToLogin();
-                        }
-                    }
-                } else {
-                    Log.e("FaceMorph", "Unable to load OpenCV");
-                }
-            }
-
-            @Override
-            public void onPackageInstall(int operation, InstallCallbackInterface callback) {
-                SplashFragment fragment = weakFragment.get();
-                if (fragment != null) {
-                    if (AuthenticationManager.getInstance().isUserSignedIn()) {
-                        fragment.navigateToHome();
+        if (!OpenCVLoader.initDebug()) {
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0, context, new LoaderCallbackInterface() {
+                @Override
+                public void onManagerConnected(int status) {
+                    if (status == LoaderCallbackInterface.SUCCESS) {
+                        SplashController.this.navigate();
                     } else {
-                        fragment.navigateToLogin();
+                        Log.e("FaceMorph", "Unable to load OpenCV");
+                        System.exit(-1);
                     }
                 }
+
+                @Override
+                public void onPackageInstall(int operation, InstallCallbackInterface callback) {
+                    SplashController.this.navigate();
+                }
+            });
+        } else {
+            this.navigate();
+        }
+
+    }
+
+    private void navigate() {
+        SplashFragment fragment = weakFragment.get();
+        if (fragment != null) {
+            if (AuthenticationManager.getInstance().isUserSignedIn()) {
+                fragment.navigateToHome();
+            } else {
+                fragment.navigateToLogin();
             }
-        });
+        }
     }
 
 }
