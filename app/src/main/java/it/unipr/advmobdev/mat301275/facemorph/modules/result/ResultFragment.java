@@ -1,15 +1,20 @@
 package it.unipr.advmobdev.mat301275.facemorph.modules.result;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.slider.Slider;
 
 import it.unipr.advmobdev.mat301275.facemorph.R;
-import it.unipr.advmobdev.mat301275.facemorph.modules.settings.SettingsFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,6 +22,10 @@ import it.unipr.advmobdev.mat301275.facemorph.modules.settings.SettingsFragment;
  * create an instance of this fragment.
  */
 public class ResultFragment extends Fragment {
+
+    ResultController controller = new ResultController(this);
+    private Slider slider;
+    private ImageView resultImageView;
 
     public ResultFragment() {
         // Required empty public constructor
@@ -41,11 +50,27 @@ public class ResultFragment extends Fragment {
         if (getArguments() != null) {
 
         }
+        ResultAttachment attachment =  ResultFragmentArgs.fromBundle(getArguments()).getImages();
+        controller.setAttachment(attachment);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_result, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        slider = (Slider) getView().findViewById(R.id.alpha_slider);
+        resultImageView = (ImageView) getView().findViewById(R.id.result_image_view);
+        controller.viewCreated();
+    }
+
+    public void setImage(Bitmap bitmap) {
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+        Runnable myRunnable = () -> resultImageView.setImageBitmap(bitmap);
+        mainHandler.post(myRunnable);
     }
 }

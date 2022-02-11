@@ -100,8 +100,13 @@ public class PreviewFragment extends Fragment {
     }
 
     public void navigateToResult(ResultAttachment attachment) {
-        PreviewFragmentDirections.ActionPreviewFragmentToResultFragment action = PreviewFragmentDirections.actionPreviewFragmentToResultFragment(attachment);
-        NavHostFragment.findNavController(this).navigate(action);
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+
+        Runnable myRunnable = () -> {
+            PreviewFragmentDirections.ActionPreviewFragmentToResultFragment action = PreviewFragmentDirections.actionPreviewFragmentToResultFragment(attachment);
+            NavHostFragment.findNavController(PreviewFragment.this).navigate(action);
+        };
+        mainHandler.post(myRunnable);
     }
 
     public void popFragment() {

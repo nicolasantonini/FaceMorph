@@ -114,7 +114,9 @@
             app:destination="@id/cameraFragment" />
         <action
             android:id="@+id/action_previewFragment_to_resultFragment"
-            app:destination="@id/resultFragment" />
+            app:destination="@id/resultFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"/>
         <argument
             android:name="bitmap"
             app:argType="it.unipr.advmobdev.mat301275.facemorph.modules.preview.PreviewAttachment" />

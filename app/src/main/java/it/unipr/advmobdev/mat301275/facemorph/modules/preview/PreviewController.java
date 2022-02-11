@@ -71,9 +71,9 @@ public class PreviewController {
                 @Override
                 public void bleRetrieveSuccess(Bitmap bitmap) {
                     fragment.popFragment();
-                    //ResultAttachment attachment = new ResultAttachment(userBitmap, bitmap);
-                    //fragment.navigateToResult(attachment);
-                    fragment.debugShowImage(bitmap);
+                    ResultAttachment attachment = new ResultAttachment(userBitmap, bitmap);
+                    fragment.navigateToResult(attachment);
+                    //fragment.debugShowImage(bitmap);
                 }
 
                 @Override
