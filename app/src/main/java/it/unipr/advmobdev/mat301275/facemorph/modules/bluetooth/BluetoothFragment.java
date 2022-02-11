@@ -1,11 +1,19 @@
 package it.unipr.advmobdev.mat301275.facemorph.modules.bluetooth;
 
+import android.Manifest;
+import android.graphics.Bitmap;
+import android.graphics.drawable.ClipDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -27,6 +35,10 @@ public class BluetoothFragment extends BottomSheetDialogFragment {
     private Button cancelButton;
     private Button hostButton;
     private Button joinButton;
+    private ClipDrawable mClipDrawable;
+
+    private ActivityResultContracts.RequestMultiplePermissions requestMultiplePermissionsContract;
+    private ActivityResultLauncher<String[]> multiplePermissionActivityResultLauncher;
 
     public BluetoothFragment() {
         // Required empty public constructor
@@ -69,6 +81,9 @@ public class BluetoothFragment extends BottomSheetDialogFragment {
         hostButton = (Button) getView().findViewById(R.id.host_button);
         joinButton = (Button) getView().findViewById(R.id.join_button);
 
+        LayerDrawable layerDrawable = (LayerDrawable) getView().findViewById(R.id.exit_bluetooth_button).getBackground();
+        mClipDrawable = (ClipDrawable) layerDrawable.findDrawableByLayerId(R.id.clip_drawable);
+
         hostButton.setOnClickListener(v -> {
             controller.hostBluetooth();
         });
@@ -80,6 +95,8 @@ public class BluetoothFragment extends BottomSheetDialogFragment {
         cancelButton.setOnClickListener(v -> {
             controller.cancelClicked();
         });
+
+        mPermissionResult.launch(Manifest.permission.ACCESS_FINE_LOCATION);
 
     }
 
@@ -94,12 +111,59 @@ public class BluetoothFragment extends BottomSheetDialogFragment {
     }
 
     public void disableInteraction() {
-        hostButton.setEnabled(false);
-        joinButton.setEnabled(false);
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+        Runnable myRunnable = () -> {
+            hostButton.setEnabled(false);
+            joinButton.setEnabled(false);
+            cancelButton.setEnabled(false);
+        };
+        mainHandler.post(myRunnable);
     }
 
     public void enableInteraction() {
-        hostButton.setEnabled(true);
-        joinButton.setEnabled(true);
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+        Runnable myRunnable = () -> {
+            hostButton.setEnabled(true);
+            joinButton.setEnabled(true);
+            cancelButton.setEnabled(true);
+        };
+        mainHandler.post(myRunnable);
     }
+
+    public void displayToast(String string) {
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+        Runnable myRunnable = () -> Toast.makeText(getActivity(), string, Toast.LENGTH_SHORT).show();
+        mainHandler.post(myRunnable);
+    }
+
+    public void setProgress(int progress) {
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+        Runnable myRunnable = () -> cancelButton.setText(String.valueOf(progress) + "%");
+        mainHandler.post(myRunnable);
+    }
+
+    public void setInitializing() {
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+        Runnable myRunnable = () -> cancelButton.setText(R.string.initializing);
+        mainHandler.post(myRunnable);
+    }
+
+    public void setFailed() {
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+        Runnable myRunnable = () -> cancelButton.setText(R.string.cancel);
+        mainHandler.post(myRunnable);
+    }
+
+    private final ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            result -> {
+                if(result) {
+
+                } else {
+                    Toast.makeText(getActivity(), "BLE permission denied", Toast.LENGTH_SHORT).show();
+                    controller.blePermissionsDenied();
+                }
+            });
+
+
 }

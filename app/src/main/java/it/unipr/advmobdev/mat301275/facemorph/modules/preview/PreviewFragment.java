@@ -2,6 +2,7 @@ package it.unipr.advmobdev.mat301275.facemorph.modules.preview;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,7 +105,17 @@ public class PreviewFragment extends Fragment {
     }
 
     public void popFragment() {
-        NavHostFragment.findNavController(this).popBackStack();
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+
+        Runnable myRunnable = () -> NavHostFragment.findNavController(this).popBackStack();
+        mainHandler.post(myRunnable);
+
+    }
+
+    public void debugShowImage(Bitmap bitmap) {
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+        Runnable myRunnable = () -> previewImageView.setImageBitmap(bitmap);
+        mainHandler.post(myRunnable);
     }
 
 }

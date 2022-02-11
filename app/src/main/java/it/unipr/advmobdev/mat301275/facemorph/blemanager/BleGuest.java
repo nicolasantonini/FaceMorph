@@ -18,9 +18,18 @@ import android.graphics.Bitmap;
 import android.os.ParcelUuid;
 import android.util.Log;
 
+import com.google.android.gms.common.util.ArrayUtils;
+import com.google.common.primitives.Bytes;
+
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import it.unipr.advmobdev.mat301275.facemorph.opencv.Utilities;
 
@@ -36,9 +45,16 @@ public class BleGuest {
     private BluetoothGattCharacteristic charTx;
     private BluetoothGattCharacteristic charRx;
 
+    private BluetoothGatt bluetoothGatt;
+
     private BluetoothDevice connectedDevice;
+    private int currentProgress = -1;
 
     private byte[] bytesToSend;
+    int index = -1;
+    private List<Byte> receivedBytes = new ArrayList<>();
+
+    private int rcvSize = -1;
 
     private int currentMtu = 0;
 
@@ -87,6 +103,7 @@ public class BleGuest {
         if (mBluetoothLeScanner != null) {
             mBluetoothLeScanner.stopScan(scanCallback);
         }
+
     }
 
     private ScanCallback scanCallback = new ScanCallback() {
@@ -143,7 +160,7 @@ public class BleGuest {
             charTx = service.getCharacteristic(BleService.characteristicTxUUID);
             charRx = service.getCharacteristic(BleService.characteristicRxUUID);
 
-            gatt.requestMtu(500);
+            gatt.requestMtu(512);
         }
 
         @Override
@@ -160,6 +177,62 @@ public class BleGuest {
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
             Log.i("BleNick", "Notifica dato");
+            if (rcvSize == -1) {
+                ByteBuffer wrapped = ByteBuffer.wrap(characteristic.getValue());
+                rcvSize = wrapped.getInt();
+                Log.i("BleNickSize", String.valueOf(BleGuest.this.rcvSize));
+            } else {
+                receivedBytes.addAll(Bytes.asList(characteristic.getValue()));
+                int newProgress = (int) ( (100.0 * receivedBytes.size())  / (2.0f * rcvSize));
+                if (currentProgress != newProgress) {
+                    callback.bleProgress(newProgress);
+                    currentProgress = newProgress;
+                }
+
+                Log.i("BleNickProgress",  String.valueOf(receivedBytes.size()));
+                if (receivedBytes.size() >= rcvSize) {
+                    if (receivedBytes.size() > rcvSize) {
+                        receivedBytes = receivedBytes.subList(0, rcvSize);
+                    }
+                    Log.i("BleNickProgressAdjust",  String.valueOf(receivedBytes.size()));
+                    gatt.setCharacteristicNotification(charTx, false);
+                    UUID notificationsUUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+                    BluetoothGattDescriptor notificationDescriptor = charTx.getDescriptor(notificationsUUID);
+                    notificationDescriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+                    gatt.writeDescriptor(notificationDescriptor);
+                    BleGuest.this.state = State.SENDING;
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            if (index == -1) {
+                                byte[] messageLength = ByteBuffer.allocate(4).putInt(BleGuest.this.bytesToSend.length).array();
+                                charRx.setValue(messageLength);
+                                gatt.writeCharacteristic(charRx);
+                            } else {
+                                byte[] nextSlice = Arrays.copyOfRange(BleGuest.this.bytesToSend, index * currentMtu, (index + 1) * currentMtu);
+                                int newProgress = (int) ( (100.0 * index * currentMtu)  / (2.0f * BleGuest.this.bytesToSend.length)) + 50;
+                                if (currentProgress != newProgress) {
+                                    callback.bleProgress(newProgress);
+                                    currentProgress = newProgress;
+                                }
+                                charRx.setValue(nextSlice);
+                                gatt.writeCharacteristic(charRx);
+                            }
+
+                            index++;
+
+                            if (index * currentMtu >= BleGuest.this.bytesToSend.length) {
+                                byte[] bytes = Bytes.toArray(receivedBytes);
+                                callback.bleSuccess(Utilities.byteArrayToBitmap(bytes));
+                                BleGuest.this.state = State.COMPLETED;
+                                gatt.close();
+                                this.cancel();
+                            }
+                        }
+                    }, 50, 50);
+                }
+            }
         }
 
         @Override
@@ -187,7 +260,7 @@ public class BleGuest {
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
             super.onMtuChanged(gatt, mtu, status);
             Log.d("mtu", new String(String.valueOf(mtu)));
-            BleGuest.this.currentMtu = mtu;
+            BleGuest.this.currentMtu = mtu - 3;
 
             gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
 

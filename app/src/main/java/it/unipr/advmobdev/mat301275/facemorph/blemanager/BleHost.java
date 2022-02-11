@@ -16,11 +16,18 @@ import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.ParcelUuid;
+import android.util.Log;
+
+import com.google.android.gms.common.util.ArrayUtils;
+import com.google.common.primitives.Bytes;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
+import io.grpc.okhttp.internal.Util;
 import it.unipr.advmobdev.mat301275.facemorph.opencv.Utilities;
 
 public class BleHost {
@@ -39,10 +46,14 @@ public class BleHost {
 
     private BluetoothDevice connectedDevice;
 
+    private int currentProgress = -1;
+
     private int currentMtu = 0;
 
     private byte[] bytesToSend;
     private int index = 0;
+    private int rcvSize = -1;
+    private List<Byte> receivedBytes = new ArrayList<>();
 
     private State state = State.IDLE;
     enum State {
@@ -119,7 +130,10 @@ public class BleHost {
             mBluetoothGattServer.cancelConnection(connectedDevice);
         }
 
-        mAdvertiser.stopAdvertising(advertiseCallback);
+        if (mAdvertiser != null) {
+            mAdvertiser.stopAdvertising(advertiseCallback);
+        }
+
     }
 
     private AdvertiseCallback advertiseCallback = new AdvertiseCallback() {
@@ -154,6 +168,29 @@ public class BleHost {
         @Override
         public void onCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
             super.onCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value);
+            if (rcvSize == -1) {
+                ByteBuffer wrapped = ByteBuffer.wrap(value);
+                rcvSize = wrapped.getInt();
+                Log.i("BleNickSize", String.valueOf(BleHost.this.rcvSize));
+            } else {
+                receivedBytes.addAll(Bytes.asList(value));
+                int newProgress = (int) ( (100.0 * receivedBytes.size())  / (2.0f * rcvSize)) + 50;
+                if (currentProgress != newProgress) {
+                    callback.bleProgress(newProgress);
+                    currentProgress = newProgress;
+                }
+                Log.i("BleNickProgress",  String.valueOf(receivedBytes.size()));
+                Log.i("BleNickMissing",  String.valueOf(rcvSize-receivedBytes.size()));
+                if (receivedBytes.size() >= rcvSize) {
+                    if (receivedBytes.size() > rcvSize) {
+                        receivedBytes = receivedBytes.subList(0, rcvSize);
+                    }
+                    Log.i("BleNickProgressAdjust", String.valueOf(receivedBytes.size()));
+                    byte[] bytes = Bytes.toArray(receivedBytes);
+                    callback.bleSuccess(Utilities.byteArrayToBitmap(bytes));
+                }
+            }
+
         }
 
         @Override
@@ -170,6 +207,7 @@ public class BleHost {
                 BleHost.this.state = State.SENDING;
 
                 byte[] messageLength = ByteBuffer.allocate(4).putInt(BleHost.this.bytesToSend.length).array();
+                Log.i("BleNickSize", new String(String.valueOf(BleHost.this.bytesToSend.length)));
                 index = 0;
                 charTx.setValue(messageLength);
                 mBluetoothGattServer.notifyCharacteristicChanged(device, charTx, false);
@@ -189,10 +227,16 @@ public class BleHost {
             super.onNotificationSent(device, status);
 
             byte[] nextSlice = Arrays.copyOfRange(BleHost.this.bytesToSend, index * currentMtu, (index + 1) * currentMtu);
+            int newProgress = (int) ( (100.0 * index * currentMtu)  / (2.0f * BleHost.this.bytesToSend.length));
+            if (currentProgress != newProgress) {
+                callback.bleProgress(newProgress);
+                currentProgress = newProgress;
+            }
+            Log.i("BleNickIterationStart", String.valueOf(index * currentMtu));
             index += 1;
             charTx.setValue(nextSlice);
             try {
-                Thread.sleep(12);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -202,7 +246,7 @@ public class BleHost {
         @Override
         public void onMtuChanged(BluetoothDevice device, int mtu) {
             super.onMtuChanged(device, mtu);
-            BleHost.this.currentMtu = mtu;
+            BleHost.this.currentMtu = mtu - 3;
         }
 
         @Override
