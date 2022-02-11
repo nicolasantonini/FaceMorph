@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,6 +65,19 @@ public class ResultFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         slider = (Slider) getView().findViewById(R.id.alpha_slider);
+        slider.setValue(50.0f);
+        slider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+            @Override
+            public void onStartTrackingTouch(@NonNull Slider slider) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(@NonNull Slider slider) {
+                controller.alphaChanged(slider.getValue());
+            }
+        });
+
         resultImageView = (ImageView) getView().findViewById(R.id.result_image_view);
         controller.viewCreated();
     }
@@ -71,6 +85,12 @@ public class ResultFragment extends Fragment {
     public void setImage(Bitmap bitmap) {
         Handler mainHandler = new Handler(getContext().getMainLooper());
         Runnable myRunnable = () -> resultImageView.setImageBitmap(bitmap);
+        mainHandler.post(myRunnable);
+    }
+
+    public void displayToast(String string) {
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+        Runnable myRunnable = () -> Toast.makeText(getActivity(), string, Toast.LENGTH_SHORT).show();
         mainHandler.post(myRunnable);
     }
 }

@@ -22,4 +22,11 @@ public class ResultController {
         }
     }
 
+    public void alphaChanged(float alpha) {
+        ResultFragment fragment = weakFragment.get();
+        if (fragment != null) {
+            fragment.displayToast(String.valueOf(alpha));
+        }
+    }
+
 }
