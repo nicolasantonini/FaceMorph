@@ -25,7 +25,7 @@ public class ResultController {
         ResultFragment fragment = weakFragment.get();
         if (fragment != null) {
             try {
-                Bitmap img = Morph.getMorph(5.0, context);
+                Bitmap img = Morph.getMorph(0.5, context);
                 fragment.setImage(img);
             } catch (IOException e) {
                 e.printStackTrace();
