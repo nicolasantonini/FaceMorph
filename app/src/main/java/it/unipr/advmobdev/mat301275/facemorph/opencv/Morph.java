@@ -1,22 +1,36 @@
 package it.unipr.advmobdev.mat301275.facemorph.opencv;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
+import android.util.Log;
 
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.unipr.advmobdev.mat301275.facemorph.R;
+
 import static org.opencv.core.Core.BORDER_REFLECT_101;
+import static org.opencv.imgcodecs.Imgcodecs.CV_LOAD_IMAGE_UNCHANGED;
+import static org.opencv.imgcodecs.Imgcodecs.imdecode;
 
 public class Morph {
 
@@ -95,8 +109,25 @@ public class Morph {
 
     }
 
-    public Bitmap getMorph(double alpha) {
-        return null;
+    public static Bitmap getMorph(double alpha, Context context) throws IOException {
+
+        InputStream is = context.getResources().openRawResource(R.raw.donald_trump);
+        int nRead;
+        byte[] data = new byte[16 * 1024];
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        byte[] bytes = buffer.toByteArray();
+
+        Mat mat = imdecode(new MatOfByte(bytes), CV_LOAD_IMAGE_UNCHANGED);
+        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2RGB);
+        //Imgcodecs imgcodecs = new Imgcodecs();
+        //Mat m = imgcodecs.imread("ted_cruz.jpg");
+        //Log.i("Ok", "ok");
+        final Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.RGB_565);
+        Utils.matToBitmap(mat, bitmap);
+        return bitmap;
     }
 
 }

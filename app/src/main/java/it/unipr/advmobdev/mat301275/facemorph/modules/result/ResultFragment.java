@@ -79,7 +79,7 @@ public class ResultFragment extends Fragment {
         });
 
         resultImageView = (ImageView) getView().findViewById(R.id.result_image_view);
-        controller.viewCreated();
+        controller.viewCreated(getContext());
     }
 
     public void setImage(Bitmap bitmap) {

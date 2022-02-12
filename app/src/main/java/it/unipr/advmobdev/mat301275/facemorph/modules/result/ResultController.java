@@ -1,6 +1,12 @@
 package it.unipr.advmobdev.mat301275.facemorph.modules.result;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+
+import it.unipr.advmobdev.mat301275.facemorph.opencv.Morph;
 
 public class ResultController {
 
@@ -15,10 +21,16 @@ public class ResultController {
         this.attachment = attachment;
     }
 
-    public void viewCreated() {
+    public void viewCreated(Context context) {
         ResultFragment fragment = weakFragment.get();
         if (fragment != null) {
-            fragment.setImage(this.attachment.getBitmapTwo());
+            try {
+                Bitmap img = Morph.getMorph(5.0, context);
+                fragment.setImage(img);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //fragment.setImage(this.attachment.getBitmapTwo());
         }
     }
 
