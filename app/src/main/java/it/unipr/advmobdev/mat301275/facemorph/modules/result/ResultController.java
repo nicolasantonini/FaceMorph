@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 
+import org.opencv.core.Mat;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
@@ -56,6 +58,18 @@ public class ResultController {
                     public int getIterations() {
                         return (int) alpha;
                     }
+
+                    @Override
+                    public Bitmap getBitmap1() {
+                        return attachment.getBitmapOne();
+                    }
+
+                    @Override
+                    public Bitmap getBitmap2() {
+                        return attachment.getBitmapTwo();
+                    }
+
+
                 });
         }
 
