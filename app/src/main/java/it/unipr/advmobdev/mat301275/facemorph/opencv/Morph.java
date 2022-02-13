@@ -12,6 +12,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfFloat6;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
@@ -19,6 +20,7 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.imgproc.Subdiv2D;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -35,6 +37,47 @@ import static org.opencv.imgcodecs.Imgcodecs.CV_LOAD_IMAGE_UNCHANGED;
 import static org.opencv.imgcodecs.Imgcodecs.imdecode;
 
 public class Morph {
+
+    public static ArrayList<Triangle> calcDelaunayTriangles(Rect rect, ArrayList<Point> points) {
+        ArrayList<Triangle> triangles = new ArrayList<>();
+
+        Subdiv2D subdiv2D = new Subdiv2D(rect);
+
+        for (int i = 0; i < points.size(); i++) {
+            subdiv2D.insert(points.get(i));
+        }
+
+        MatOfFloat6 triangleList = new MatOfFloat6();
+        subdiv2D.getTriangleList(triangleList);
+        Point[] pt = new Point[3];
+        int[] ind = new int[3];
+
+        for (int i = 0; i < triangleList.width()*triangleList.rows(); i++) {
+            Log.i("Delaunay", "It");
+            double[] t = triangleList.get(i,0);
+            pt[0] = new Point(t[0], t[1]);
+            pt[1] = new Point(t[2], t[3]);
+            pt[2] = new Point(t[4], t[5]);
+
+            if (rect.contains(pt[0]) && rect.contains(pt[1]) && rect.contains(pt[2])) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < points.size(); k++) {
+                        if ((Math.abs(pt[j].x - points.get(k).x) < 1) && (Math.abs(pt[j].y - points.get(k).y) < 1)) {
+                            ind[j] = k;
+                        }
+                    }
+                }
+
+                Triangle tr = new Triangle();
+                tr.x = ind[0];
+                tr.y = ind[1];
+                tr.z = ind[2];
+                triangles.add(tr);
+            }
+        }
+
+        return triangles;
+    }
 
     public static ArrayList<Point> readPoints1(Context context) {
         InputStream istri = context.getResources().openRawResource(R.raw.hillary_clinton_jpg);
@@ -138,8 +181,6 @@ public class Morph {
         ArrayList<Point> t2Rect = new ArrayList<>();
         ArrayList<Point> tRect = new ArrayList<>();
 
-        ArrayList<Point> tRectInt;
-
         for (int i = 0; i < 3; i++) {
             tRect.add(new Point(t.get(i).x - r.x, t.get(i).y - r.y));
             t1Rect.add(new Point(t1.get(i).x - r1.x, t1.get(i).y - r1.y));
@@ -147,86 +188,31 @@ public class Morph {
         }
 
         Mat mask = new Mat(r.height, r.width, CvType.CV_32FC3, Scalar.all(0.0));
-
         MatOfPoint tRectMat = new MatOfPoint();
         tRectMat.fromList(tRect);
-
-        Log.i("CIAONE_MASK_BERFORE", mask.get(0, 0)[0] + " " + mask.get(0, 0)[1] + " " + mask.get(0, 0)[2]);
-
         Imgproc.fillConvexPoly(mask, tRectMat, new Scalar(1.0, 1.0, 1.0), 16, 0);
-
-        Log.i("CIAONE_MASK_AFTER", mask.get(0, 0)[0] + " " + mask.get(0, 0)[1] + " " + mask.get(0, 0)[2]);
-
         Mat img1Rect = new Mat(img1,r1);
         Mat img2Rect = new Mat(img2,r2);
-
         Mat warpImage1 = new Mat(r.height, r.width, img1Rect.type(), Scalar.all(0.0));
         Mat warpImage2 = new Mat(r.height, r.width, img2Rect.type(), Scalar.all(0.0));
-
         MatOfPoint2f t1RectMat = new MatOfPoint2f();
         t1RectMat.fromList(t1Rect);
-
         MatOfPoint2f t2RectMat = new MatOfPoint2f();
         t2RectMat.fromList(t2Rect);
-
         MatOfPoint2f tRectMatF = new MatOfPoint2f();
         tRectMatF.fromList(tRect);
-
         applyAffineTransform(warpImage1, img1Rect, t1RectMat, tRectMatF);
         applyAffineTransform(warpImage2, img2Rect, t2RectMat, tRectMatF);
-
-        //Log.i("Pixello", String.valueOf(warpImage1.get(0,0)[0]) + " " + String.valueOf(warpImage1.get(0,0)[1]) + " " + String.valueOf(warpImage1.get(0,0)[2]));
-        //Log.i("Pixello", String.valueOf(warpImage2.get(0,0)[0]) + " " + String.valueOf(warpImage2.get(0,0)[1]) + " " + String.valueOf(warpImage2.get(0,0)[2]));
-
         Mat imgRect = new Mat(warpImage1.rows(), warpImage1.cols(), warpImage1.type(), Scalar.all(0));
         Mat imgTemp = new Mat(warpImage1.rows(), warpImage1.cols(), warpImage1.type(), Scalar.all(0));
-
-        //Log.i("Pixello", String.valueOf(warpImage1.get(0,0)[0]) + " " + String.valueOf(warpImage1.get(0,0)[1]) + " " + String.valueOf(warpImage1.get(0,0)[2]));
-
         Core.multiply(warpImage1, new Scalar(1.0 - alpha, 1.0 - alpha, 1.0 - alpha), imgRect);
-
-        Log.i("CIAONE_001", warpImage1.get(0, 0)[0] + " " + warpImage1.get(0, 0)[1] + " " + warpImage1.get(0, 0)[2]);
-
         Core.multiply(warpImage2, new Scalar(alpha, alpha, alpha), imgTemp);
-
-        Log.i("CIAONE_002", warpImage2.get(0, 0)[0] + " " + warpImage2.get(0, 0)[1] + " " + warpImage2.get(0, 0)[2]);
-
         Core.add(imgRect, imgTemp, imgRect);
-
-        Log.i("CIAONE_003", imgRect.get(0, 0)[0] + " " + imgRect.get(0, 0)[1] + " " + imgRect.get(0, 0)[2]);
-
-
-        //Log.i("Pixello", String.valueOf(imgRect.get(0,0)[0]) + " " + String.valueOf(imgRect.get(0,0)[1]) + " " + String.valueOf(imgRect.get(0,0)[2]));
-
         Core.multiply(imgRect, mask, imgRect);
-
-        Log.i("CIAONE_004", imgRect.get(0, 0)[0] + " " + imgRect.get(0, 0)[1] + " " + imgRect.get(0, 0)[2]);
-
-        if (imgRect.get(0, 0)[0] == 0.0) {
-            Log.i("CIAONE_KO", "ERRORE");
-        }
-
         Mat imgTemp2 = new Mat(mask.rows(), mask.cols(), mask.type(), Scalar.all(0));
-
-        Log.i("CIAONE_005", imgTemp2.get(0, 0)[0] + " " + imgTemp2.get(0, 0)[1] + " " + imgTemp2.get(0, 0)[2]);
-
         Mat allones = new Mat(mask.rows(), mask.cols(), mask.type(), Scalar.all(1.0));
-
         Core.subtract(allones, mask, imgTemp2);
-        //Core.subtract(mask, new Scalar(255.0, 255.0, 255.0), imgTemp2); // !!!!!
-
-        Log.i("CIAONE_006", imgTemp2.get(0, 0)[0] + " " + imgTemp2.get(0, 0)[1] + " " + imgTemp2.get(0, 0)[2]);
-
-        //Core.multiply(img.submat(r), mask, img.submat(r));
-
-        Log.i("CIAONE_007", img.submat(r).get(0, 0)[0] + " " + img.submat(r).get(0, 0)[1] + " " + img.submat(r).get(0, 0)[2]);
-
-
         Core.bitwise_or(img.submat(r), imgRect, img.submat(r));
-        //Core.add(img.submat(r), imgRect, img.submat(r));
-        Log.i("CIAONE_008", img.submat(r).get(0, 0)[0] + " " + img.submat(r).get(0, 0)[1] + " " + img.submat(r).get(0, 0)[2]);
-
-
     }
 
     public static void getMorph(double alpha, Context context, ProgressCallback callback) throws IOException {
@@ -275,10 +261,10 @@ public class Morph {
         }
 
         ArrayList<Triangle> triangles = readTri(context);
+        ArrayList<Triangle> trianglesAuto = calcDelaunayTriangles(new Rect(0,0,img1.width(), img1.height()), points);
 
         int iteration = 0;
-        for (Triangle triangle : triangles) {
-            Log.i("Triangles", String.valueOf(triangle.x));
+        for (Triangle triangle : trianglesAuto) {
 
             ArrayList<Point> t1 = new ArrayList<>();
             ArrayList<Point> t2 = new ArrayList<>();
