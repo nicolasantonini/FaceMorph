@@ -48,116 +48,6 @@ import static org.opencv.imgcodecs.Imgcodecs.imdecode;
 
 public class Morph {
 
-    public static ArrayList<Triangle> calcDelaunayTriangles(Rect rect, ArrayList<Point> points) {
-        ArrayList<Triangle> triangles = new ArrayList<>();
-
-        Subdiv2D subdiv2D = new Subdiv2D(rect);
-
-        for (int i = 0; i < points.size(); i++) {
-            subdiv2D.insert(points.get(i));
-        }
-
-        MatOfFloat6 triangleList = new MatOfFloat6();
-        subdiv2D.getTriangleList(triangleList);
-        Point[] pt = new Point[3];
-        int[] ind = new int[3];
-
-        for (int i = 0; i < triangleList.width()*triangleList.rows(); i++) {
-            Log.i("Delaunay", "It");
-            double[] t = triangleList.get(i,0);
-            pt[0] = new Point(t[0], t[1]);
-            pt[1] = new Point(t[2], t[3]);
-            pt[2] = new Point(t[4], t[5]);
-
-            if (rect.contains(pt[0]) && rect.contains(pt[1]) && rect.contains(pt[2])) {
-                for (int j = 0; j < 3; j++) {
-                    for (int k = 0; k < points.size(); k++) {
-                        if ((Math.abs(pt[j].x - points.get(k).x) < 1) && (Math.abs(pt[j].y - points.get(k).y) < 1)) {
-                            ind[j] = k;
-                        }
-                    }
-                }
-
-                Triangle tr = new Triangle();
-                tr.x = ind[0];
-                tr.y = ind[1];
-                tr.z = ind[2];
-                triangles.add(tr);
-            }
-        }
-
-        return triangles;
-    }
-
-    public static ArrayList<Point> readPoints1(Context context) {
-        InputStream istri = context.getResources().openRawResource(R.raw.hillary_clinton_jpg);
-        BufferedReader br = new BufferedReader(new InputStreamReader(istri));
-        String readLine = null;
-
-        ArrayList<Point> points = new ArrayList<>();
-
-        try {
-            while ((readLine = br.readLine()) != null) {
-                String[] splitted = readLine.split("\\s+");
-                Point point = new Point();
-                point.x = Integer.parseInt(splitted[0]);
-                point.y = Integer.parseInt(splitted[1]);
-                points.add(point);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return points;
-    }
-
-    public static ArrayList<Point> readPoints2(Context context) {
-        InputStream istri = context.getResources().openRawResource(R.raw.ted_cruz_jpg);
-        BufferedReader br = new BufferedReader(new InputStreamReader(istri));
-        String readLine = null;
-
-        ArrayList<Point> points = new ArrayList<>();
-
-        try {
-            while ((readLine = br.readLine()) != null) {
-                String[] splitted = readLine.split("\\s+");
-                Point point = new Point();
-                point.x = Integer.parseInt(splitted[0]);
-                point.y = Integer.parseInt(splitted[1]);
-                points.add(point);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return points;
-    }
-
-    public static ArrayList<Triangle> readTri(Context context) {
-
-        InputStream istri = context.getResources().openRawResource(R.raw.tri);
-        BufferedReader br = new BufferedReader(new InputStreamReader(istri));
-        String readLine = null;
-
-        ArrayList<Triangle> triangles = new ArrayList<>();
-
-        try {
-            while ((readLine = br.readLine()) != null) {
-                String[] splitted = readLine.split("\\s+");
-                Triangle tri = new Triangle();
-                tri.x = Integer.parseInt(splitted[0]);
-                tri.y = Integer.parseInt(splitted[1]);
-                tri.z = Integer.parseInt(splitted[2]);
-                triangles.add(tri);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return triangles;
-    }
-
-    //OK!
     public static void applyAffineTransform(Mat warpImage, Mat src, MatOfPoint2f srcTri, MatOfPoint2f dstTri) {
         Mat warpMat = Imgproc.getAffineTransform(srcTri, dstTri);
         Mat tmpWarpMat = new Mat(3, 3, CvType.CV_64FC1);
@@ -225,130 +115,44 @@ public class Morph {
         Core.bitwise_or(img.submat(r), imgRect, img.submat(r));
     }
 
-    public static void getMorph(double alpha, Context context, ProgressCallback callback) throws IOException {
-
+    public static Bitmap morph(MorphConfiguration configuration, Bitmap bitmap1, Bitmap bitmap2, double alpha, int triangles) {
+        //Gets a Mat from the Bitmap of the image 1
         Mat img1 = new Mat();
-        Bitmap bit1 = callback.getBitmap1().copy(Bitmap.Config.RGB_565, true);
+        Bitmap bit1 = bitmap1.copy(Bitmap.Config.RGB_565, true);
         Utils.bitmapToMat(bit1, img1);
-
         Imgproc.cvtColor(img1, img1, Imgproc.COLOR_RGBA2RGB);
+
+        //Gets a Mat from the Bitmap of the image 2
         Mat img2 = new Mat();
-        Bitmap bit2 = callback.getBitmap2().copy(Bitmap.Config.RGB_565, true);
+        Bitmap bit2 = bitmap2.copy(Bitmap.Config.RGB_565, true);
         Utils.bitmapToMat(bit2, img2);
         Imgproc.cvtColor(img2, img2, Imgproc.COLOR_RGBA2RGB);
-        /* ******************** */
 
-        int metodo= FeatureDetector.ORB;
-        int metodoDescriptor= DescriptorExtractor.ORB;
-        Mat greyImage=new Mat();
-        Mat greyImageToMatch=new Mat();
-        MatOfKeyPoint keyPoints=new MatOfKeyPoint();
-        MatOfKeyPoint keyPointsToMatch=new MatOfKeyPoint();
-        Imgproc.cvtColor(img1, greyImage, Imgproc.COLOR_RGB2GRAY);
-        Imgproc.cvtColor(img2, greyImageToMatch, Imgproc.COLOR_RGB2GRAY);
-        FeatureDetector detector=FeatureDetector.create(metodo);
-        detector.detect(greyImage, keyPoints);
-        detector.detect(greyImageToMatch, keyPointsToMatch);
-        DescriptorExtractor dExtractor = DescriptorExtractor.create(metodoDescriptor);
-        Mat descriptors=new Mat();
-        Mat descriptorsToMatch=new Mat();
-        dExtractor.compute(greyImage, keyPoints, descriptors);
-        dExtractor.compute(greyImageToMatch, keyPointsToMatch, descriptorsToMatch);
-
-        List<KeyPoint> keyPointsList = keyPoints.toList();
-        List<KeyPoint> keyPointsList2 = keyPointsToMatch.toList();
-
-        DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE);
-        MatOfDMatch matches=new MatOfDMatch();
-        matcher.match(descriptorsToMatch,descriptors,matches);
-        ArrayList<DMatch> goodMatches=new ArrayList<DMatch>();
-        List<DMatch> allMatches=matches.toList();
-        Collections.sort(allMatches, (match2, match1) -> {
-            float distance = match2.distance - match1.distance;
-            return (int) (distance);
-        });
-        for (int i = 0; i < allMatches.size(); i++ )
-            goodMatches.add(allMatches.get(i));
-        MatOfDMatch goodEnough=new MatOfDMatch();
-        goodEnough.fromList(goodMatches);
-
-
-        /* Devo filtrare i matches:
-        *
-        * Ottengo ogni match
-        *   Ottengo ogni coppia di keypoint ad esso associato
-        *       Calcolo la distanza tra le coordinate dei due keypoint
-        *           Se < DIST_MAX : aggiungo alla lista dei match filtrati
-        * */
-
-        ArrayList<Point> points1 = new ArrayList<>();
-        ArrayList<Point> points2 = new ArrayList<>();
-
-        ArrayList<DMatch> selectedMatches = new ArrayList<DMatch>();
-        for (DMatch goodMatch: goodMatches) {
-            KeyPoint kp1 = keyPointsList.get(goodMatch.trainIdx);
-            KeyPoint kp2 = keyPointsList2.get(goodMatch.queryIdx);
-            Point p1 = kp1.pt;
-            Point p2 = kp2.pt;
-
-            double distance = Math.sqrt((p2.y - p1.y) * (p2.y - p1.y) + (p2.x - p1.x) * (p2.x - p1.x));
-            if (distance < 100.0) {
-                selectedMatches.add(goodMatch);
-                points1.add(p1);
-                points2.add(p2);
-            }
-
-        }
-
-
-        points1.add(new Point(0,0));
-        points1.add(new Point(img1.cols() - 1.0,0));
-        points1.add(new Point(img1.cols() - 1.0, img1.rows() - 1.0));
-        points1.add(new Point(0, img1.rows() - 1.0));
-
-
-        points2.add(new Point(0,0));
-        points2.add(new Point(img2.cols() - 1.0,0));
-        points2.add(new Point(img2.cols() - 1.0, img2.rows() - 1.0));
-        points2.add(new Point(0, img2.rows() - 1.0));
-
-
-        MatOfDMatch selectedMatchs = new MatOfDMatch();
-        selectedMatchs.fromList(selectedMatches);
-
-        Mat finalImg=new Mat();
-        Features2d.drawMatches(greyImageToMatch, keyPointsToMatch, greyImage,
-                keyPoints, selectedMatchs, finalImg, Scalar.all(-1), Scalar.all(-1),
-                new MatOfByte(), Features2d.DRAW_RICH_KEYPOINTS +
-                        Features2d.NOT_DRAW_SINGLE_POINTS);
-
-
-        /* ******************** */
-
-
+        //Creates the output image
         img1.convertTo(img1, CvType.CV_32F);
         img2.convertTo(img2, CvType.CV_32F);
-
         Mat imgMorph = new Mat(img1.size(), CvType.CV_32FC3, Scalar.all(0.0));
 
-        //ArrayList<Point> points1 = readPoints1(context);
-        //ArrayList<Point> points2 = readPoints2(context);
+        //Retrieves the points of the two images from the configuration
+        ArrayList<Point> points1 = configuration.points1;
+        ArrayList<Point> points2 = configuration.points2;
 
+        //Calcolates the points on the final image
         ArrayList<Point> points = new ArrayList<>();
-
         for (int i = 0; i < points1.size(); i++) {
             double x;
             double y;
             x = (1.0 - alpha) * points1.get(i).x + alpha * points2.get(i).x;
             y = (1.0 - alpha) * points1.get(i).y + alpha * points2.get(i).y;
-
             points.add(new Point(x, y));
         }
 
-        ArrayList<Triangle> triangles = readTri(context);
-        ArrayList<Triangle> trianglesAuto = calcDelaunayTriangles(new Rect(0,0,img1.width(), img1.height()), points);
+        //Gets the Delaunay triangolation of the points
+        ArrayList<Triangle> trianglesAuto = Triangulation.calcDelaunayTriangles(new Rect(0,0,img1.width(), img1.height()), points);
 
         int iteration = 0;
+
+        //Loops the triangles and adds every patch to the final image
         for (Triangle triangle : trianglesAuto) {
 
             ArrayList<Point> t1 = new ArrayList<>();
@@ -369,7 +173,7 @@ public class Morph {
 
             morphTriangle(img1, img2, imgMorph, t1, t2, t, alpha);
 
-            if (iteration == callback.getIterations()) {
+            if (iteration == (triangles - 1)) {
                 break;
             } else {
                 iteration++;
@@ -379,16 +183,10 @@ public class Morph {
 
         /* RETURNS AN IMAGE TO THE APP */
 
-
-
         imgMorph.convertTo(imgMorph, CvType.CV_8U);
-
-
-        //img2.convertTo(img2, CvType.CV_8U);
-
         final Bitmap bitmap = Bitmap.createBitmap(img2.cols(), img2.rows(), Bitmap.Config.RGB_565);
         Utils.matToBitmap(imgMorph, bitmap);
-        callback.imageCalcolated(bitmap);
+        return bitmap;
 
     }
 

@@ -88,12 +88,6 @@ public class ResultFragment extends Fragment {
         controller.viewCreated(getContext());
     }
 
-    public void showTriangleCalcolated(Bitmap bitmap) {
-        Handler mainHandler = new Handler(getContext().getMainLooper());
-        Runnable myRunnable = () -> resultImageView.setImageBitmap(bitmap);
-        mainHandler.post(myRunnable);
-    }
-
     public void setImage(Bitmap bitmap) {
         Handler mainHandler = new Handler(getContext().getMainLooper());
         Runnable myRunnable = () -> resultImageView.setImageBitmap(bitmap);
