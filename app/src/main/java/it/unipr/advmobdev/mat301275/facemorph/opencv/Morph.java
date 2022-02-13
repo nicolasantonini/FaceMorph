@@ -147,7 +147,7 @@ public class Morph {
             points.add(new Point(x, y));
         }
 
-        //Gets the Delaunay triangolation of the points
+        //Gets the Delaunay triangulation of the points
         ArrayList<Triangle> trianglesAuto = Triangulation.calcDelaunayTriangles(new Rect(0,0,img1.width(), img1.height()), points);
 
         int iteration = 0;
@@ -173,7 +173,7 @@ public class Morph {
 
             morphTriangle(img1, img2, imgMorph, t1, t2, t, alpha);
 
-            if (iteration == (triangles - 1)) {
+            if (iteration >= ( ( triangles / 100.0) * (double) trianglesAuto.size() - 1.0)) {
                 break;
             } else {
                 iteration++;
