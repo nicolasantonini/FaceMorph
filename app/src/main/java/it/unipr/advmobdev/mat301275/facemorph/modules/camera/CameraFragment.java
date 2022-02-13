@@ -135,27 +135,16 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        //Frame is from the front camera
         mRgba = inputFrame.rgba();
         Core.flip(mRgba, mRgbaF, 1 );
         Core.transpose(mRgbaF, mRgbaT);
         Core.flip(mRgbaT,mRgbaF,1);
         Imgproc.resize(mRgbaF, mRgba, mRgba.size(), 0,0, 0);
+
+        //Creates a snap with only up-to-date images
         mRgba.copyTo(mRgbaSnap);
-
-        Mat greyImage=new Mat();
-        MatOfKeyPoint keyPoints=new MatOfKeyPoint();
-        Imgproc.cvtColor(mRgbaSnap, greyImage,
-                Imgproc.COLOR_RGBA2GRAY);
-        FeatureDetector detector =
-                FeatureDetector.create(FeatureDetector.ORB);
-        detector.detect(greyImage, keyPoints);
-
-        Features2d.drawKeypoints(greyImage, keyPoints, greyImage);
-
-
-        //displayImage(greyImage);
-
-        return greyImage;
+        return mRgbaSnap;
     }
 
     private final ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(

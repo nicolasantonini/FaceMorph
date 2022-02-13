@@ -238,7 +238,7 @@ public class Morph {
         Imgproc.cvtColor(img2, img2, Imgproc.COLOR_RGBA2RGB);
         /* ******************** */
 
-        int metodo= FeatureDetector.HARRIS;
+        int metodo= FeatureDetector.ORB;
         int metodoDescriptor= DescriptorExtractor.ORB;
         Mat greyImage=new Mat();
         Mat greyImageToMatch=new Mat();

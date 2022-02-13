@@ -13,6 +13,8 @@ import it.unipr.advmobdev.mat301275.facemorph.authentication.AuthenticationManag
 
 public class SplashController {
 
+    private String TAG = "FaceMorphApp";
+
     private WeakReference<SplashFragment> weakFragment = null;
 
     public SplashController(SplashFragment fragment) {
@@ -27,7 +29,7 @@ public class SplashController {
                     if (status == LoaderCallbackInterface.SUCCESS) {
                         SplashController.this.navigate();
                     } else {
-                        Log.e("FaceMorph", "Unable to load OpenCV");
+                        Log.e(TAG, "Unable to load OpenCV");
                         System.exit(-1);
                     }
                 }
