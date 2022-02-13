@@ -60,7 +60,7 @@
         android:layout_marginRight="32dp"
         android:layout_marginLeft="32dp"
         android:valueFrom="0.0"
-        android:valueTo="150.0"
+        android:valueTo="999.0"
         >
 
     </com.google.android.material.slider.Slider>

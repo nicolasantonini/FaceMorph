@@ -227,35 +227,19 @@ public class Morph {
 
     public static void getMorph(double alpha, Context context, ProgressCallback callback) throws IOException {
 
-        /* OPENS THE TWO INPUT MATS */
-        InputStream is = context.getResources().openRawResource(R.raw.hillary_clinton);
-        int nRead;
-        byte[] data = new byte[16 * 1024];
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        while ((nRead = is.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
-        byte[] bytes = buffer.toByteArray();
-        Mat img1 = imdecode(new MatOfByte(bytes), CV_LOAD_IMAGE_UNCHANGED);
-        Imgproc.cvtColor(img1, img1, Imgproc.COLOR_BGR2RGB);
+        Mat img1 = new Mat();
+        Bitmap bit1 = callback.getBitmap1().copy(Bitmap.Config.RGB_565, true);
+        Utils.bitmapToMat(bit1, img1);
 
-        InputStream is2 = context.getResources().openRawResource(R.raw.ted_cruz);
-        int nRead2;
-        byte[] data2 = new byte[16 * 1024];
-        ByteArrayOutputStream buffer2 = new ByteArrayOutputStream();
-        while ((nRead2 = is2.read(data2, 0, data2.length)) != -1) {
-            buffer2.write(data2, 0, nRead2);
-        }
-        byte[] bytes2 = buffer2.toByteArray();
-        Mat img2 = imdecode(new MatOfByte(bytes2), CV_LOAD_IMAGE_UNCHANGED);
-        Imgproc.cvtColor(img2, img2, Imgproc.COLOR_BGR2RGB);
-
-
+        Imgproc.cvtColor(img1, img1, Imgproc.COLOR_RGBA2RGB);
+        Mat img2 = new Mat();
+        Bitmap bit2 = callback.getBitmap2().copy(Bitmap.Config.RGB_565, true);
+        Utils.bitmapToMat(bit2, img2);
+        Imgproc.cvtColor(img2, img2, Imgproc.COLOR_RGBA2RGB);
         /* ******************** */
 
         int metodo= FeatureDetector.HARRIS;
         int metodoDescriptor= DescriptorExtractor.ORB;
-        int maximumNumberOfMatches=100;
         Mat greyImage=new Mat();
         Mat greyImageToMatch=new Mat();
         MatOfKeyPoint keyPoints=new MatOfKeyPoint();
@@ -283,7 +267,7 @@ public class Morph {
             float distance = match2.distance - match1.distance;
             return (int) (distance);
         });
-        for (int i = 0; i < maximumNumberOfMatches; i++ )
+        for (int i = 0; i < allMatches.size(); i++ )
             goodMatches.add(allMatches.get(i));
         MatOfDMatch goodEnough=new MatOfDMatch();
         goodEnough.fromList(goodMatches);
@@ -296,6 +280,10 @@ public class Morph {
         *       Calcolo la distanza tra le coordinate dei due keypoint
         *           Se < DIST_MAX : aggiungo alla lista dei match filtrati
         * */
+
+        ArrayList<Point> points1 = new ArrayList<>();
+        ArrayList<Point> points2 = new ArrayList<>();
+
         ArrayList<DMatch> selectedMatches = new ArrayList<DMatch>();
         for (DMatch goodMatch: goodMatches) {
             KeyPoint kp1 = keyPointsList.get(goodMatch.trainIdx);
@@ -304,11 +292,26 @@ public class Morph {
             Point p2 = kp2.pt;
 
             double distance = Math.sqrt((p2.y - p1.y) * (p2.y - p1.y) + (p2.x - p1.x) * (p2.x - p1.x));
-            if (distance < 50.0) {
+            if (distance < 100.0) {
                 selectedMatches.add(goodMatch);
+                points1.add(p1);
+                points2.add(p2);
             }
 
         }
+
+
+        points1.add(new Point(0,0));
+        points1.add(new Point(img1.cols() - 1.0,0));
+        points1.add(new Point(img1.cols() - 1.0, img1.rows() - 1.0));
+        points1.add(new Point(0, img1.rows() - 1.0));
+
+
+        points2.add(new Point(0,0));
+        points2.add(new Point(img2.cols() - 1.0,0));
+        points2.add(new Point(img2.cols() - 1.0, img2.rows() - 1.0));
+        points2.add(new Point(0, img2.rows() - 1.0));
+
 
         MatOfDMatch selectedMatchs = new MatOfDMatch();
         selectedMatchs.fromList(selectedMatches);
@@ -319,21 +322,17 @@ public class Morph {
                 new MatOfByte(), Features2d.DRAW_RICH_KEYPOINTS +
                         Features2d.NOT_DRAW_SINGLE_POINTS);
 
-        final Bitmap bitmap = Bitmap.createBitmap(finalImg.cols(), finalImg.rows(), Bitmap.Config.RGB_565);
-        Utils.matToBitmap(finalImg, bitmap);
-        callback.imageCalcolated(bitmap);
-        return;
+
         /* ******************** */
 
-        /*
 
         img1.convertTo(img1, CvType.CV_32F);
         img2.convertTo(img2, CvType.CV_32F);
 
         Mat imgMorph = new Mat(img1.size(), CvType.CV_32FC3, Scalar.all(0.0));
 
-        ArrayList<Point> points1 = readPoints1(context);
-        ArrayList<Point> points2 = readPoints2(context);
+        //ArrayList<Point> points1 = readPoints1(context);
+        //ArrayList<Point> points2 = readPoints2(context);
 
         ArrayList<Point> points = new ArrayList<>();
 
@@ -380,7 +379,7 @@ public class Morph {
 
         /* RETURNS AN IMAGE TO THE APP */
 
-       /*
+
 
         imgMorph.convertTo(imgMorph, CvType.CV_8U);
 
@@ -390,7 +389,7 @@ public class Morph {
         final Bitmap bitmap = Bitmap.createBitmap(img2.cols(), img2.rows(), Bitmap.Config.RGB_565);
         Utils.matToBitmap(imgMorph, bitmap);
         callback.imageCalcolated(bitmap);
-        */
+
     }
 
 }
