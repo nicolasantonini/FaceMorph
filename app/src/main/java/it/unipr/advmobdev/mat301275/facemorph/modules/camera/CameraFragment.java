@@ -31,6 +31,9 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfKeyPoint;
+import org.opencv.features2d.FeatureDetector;
+import org.opencv.features2d.Features2d;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -138,7 +141,21 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
         Core.flip(mRgbaT,mRgbaF,1);
         Imgproc.resize(mRgbaF, mRgba, mRgba.size(), 0,0, 0);
         mRgba.copyTo(mRgbaSnap);
-        return mRgba;
+
+        Mat greyImage=new Mat();
+        MatOfKeyPoint keyPoints=new MatOfKeyPoint();
+        Imgproc.cvtColor(mRgbaSnap, greyImage,
+                Imgproc.COLOR_RGBA2GRAY);
+        FeatureDetector detector =
+                FeatureDetector.create(FeatureDetector.ORB);
+        detector.detect(greyImage, keyPoints);
+
+        Features2d.drawKeypoints(greyImage, keyPoints, greyImage);
+
+
+        //displayImage(greyImage);
+
+        return greyImage;
     }
 
     private final ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(
