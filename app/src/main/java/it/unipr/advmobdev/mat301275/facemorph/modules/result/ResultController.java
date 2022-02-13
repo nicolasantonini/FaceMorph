@@ -2,11 +2,13 @@ package it.unipr.advmobdev.mat301275.facemorph.modules.result;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import it.unipr.advmobdev.mat301275.facemorph.opencv.Morph;
+import it.unipr.advmobdev.mat301275.facemorph.opencv.ProgressCallback;
 
 public class ResultController {
 
@@ -22,23 +24,41 @@ public class ResultController {
     }
 
     public void viewCreated(Context context) {
-        ResultFragment fragment = weakFragment.get();
-        if (fragment != null) {
-            try {
-                Bitmap img = Morph.getMorph(0.5, context);
-                fragment.setImage(img);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            //fragment.setImage(this.attachment.getBitmapTwo());
-        }
+
     }
 
-    public void alphaChanged(float alpha) {
+    public void alphaChanged(float alpha, Context context) {
         ResultFragment fragment = weakFragment.get();
         if (fragment != null) {
             fragment.displayToast(String.valueOf(alpha));
+                new ResultTask().doInBackground(new ProgressCallback() {
+                    @Override
+                    public void triangleCalcolated(Bitmap bitmap) {
+                        //fragment.setImage(bitmap);
+                    }
+
+                    @Override
+                    public void imageCalcolated(Bitmap bitmap) {
+                        fragment.setImage(bitmap);
+                    }
+
+                    @Override
+                    public Context getContext() {
+                        return context;
+                    }
+
+                    @Override
+                    public double getAlpha() {
+                        return 0.5;
+                    }
+
+                    @Override
+                    public int getIterations() {
+                        return (int) alpha;
+                    }
+                });
         }
+
     }
 
 }

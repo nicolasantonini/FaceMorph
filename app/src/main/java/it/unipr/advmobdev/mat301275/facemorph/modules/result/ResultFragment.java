@@ -74,12 +74,24 @@ public class ResultFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
-                controller.alphaChanged(slider.getValue());
+                controller.alphaChanged(slider.getValue(), getContext());
             }
         });
 
         resultImageView = (ImageView) getView().findViewById(R.id.result_image_view);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         controller.viewCreated(getContext());
+    }
+
+    public void showTriangleCalcolated(Bitmap bitmap) {
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+        Runnable myRunnable = () -> resultImageView.setImageBitmap(bitmap);
+        mainHandler.post(myRunnable);
     }
 
     public void setImage(Bitmap bitmap) {
