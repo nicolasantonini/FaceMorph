@@ -49,6 +49,7 @@ import static org.opencv.imgcodecs.Imgcodecs.imdecode;
 public class Morph {
 
     public static void applyAffineTransform(Mat warpImage, Mat src, MatOfPoint2f srcTri, MatOfPoint2f dstTri) {
+        //Calculates the affine transform
         Mat warpMat = Imgproc.getAffineTransform(srcTri, dstTri);
         Mat tmpWarpMat = new Mat(3, 3, CvType.CV_64FC1);
         tmpWarpMat.put(0,0,warpMat.get(0,0));
@@ -57,40 +58,42 @@ public class Morph {
         tmpWarpMat.put(1,0,warpMat.get(1,0));
         tmpWarpMat.put(1,1,warpMat.get(1,1));
         tmpWarpMat.put(1,2,warpMat.get(1,2));
-        tmpWarpMat.put(2,0, 0.0);
-        tmpWarpMat.put(2,1, 0.0);
+        tmpWarpMat.put(2,0, 0.0);                   //warpPerspective needs a 3*3 mat
+        tmpWarpMat.put(2,1, 0.0);                   //So I put a [0,0,1] at the end
         tmpWarpMat.put(2,2, 1.0);
         Imgproc.warpPerspective(src, warpImage, tmpWarpMat, warpImage.size(), Imgproc.INTER_LINEAR, BORDER_REFLECT_101);
     }
 
     public static void morphTriangle(Mat img1, Mat img2, Mat img, List<Point> t1, List<Point> t2, List<Point> t, double alpha) {
-        MatOfPoint tMat = new MatOfPoint();
+        MatOfPoint tMat = new MatOfPoint();  //Needed for boundingRect
         tMat.fromList(t);
 
-        MatOfPoint t1Mat = new MatOfPoint();
+        MatOfPoint t1Mat = new MatOfPoint(); //Needed for boundingRect
         t1Mat.fromList(t1);
 
-        MatOfPoint t2Mat = new MatOfPoint();
+        MatOfPoint t2Mat = new MatOfPoint(); //Needed for boundingRect
         t2Mat.fromList(t2);
 
+        //Gets the bounding rects of the triangles
         Rect r = Imgproc.boundingRect(tMat);
         Rect r1 = Imgproc.boundingRect(t1Mat);
         Rect r2 = Imgproc.boundingRect(t2Mat);
-
         ArrayList<Point> t1Rect = new ArrayList<>();
         ArrayList<Point> t2Rect = new ArrayList<>();
         ArrayList<Point> tRect = new ArrayList<>();
-
         for (int i = 0; i < 3; i++) {
             tRect.add(new Point(t.get(i).x - r.x, t.get(i).y - r.y));
             t1Rect.add(new Point(t1.get(i).x - r1.x, t1.get(i).y - r1.y));
             t2Rect.add(new Point(t2.get(i).x - r2.x, t2.get(i).y - r2.y));
         }
 
+        //Gets a mask and fills the points inside the triange with 1.0
         Mat mask = new Mat(r.height, r.width, CvType.CV_32FC3, Scalar.all(0.0));
         MatOfPoint tRectMat = new MatOfPoint();
         tRectMat.fromList(tRect);
         Imgproc.fillConvexPoly(mask, tRectMat, new Scalar(1.0, 1.0, 1.0), 16, 0);
+
+        //Calculates the affine transform of the rects of the first two triangles
         Mat img1Rect = new Mat(img1,r1);
         Mat img2Rect = new Mat(img2,r2);
         Mat warpImage1 = new Mat(r.height, r.width, img1Rect.type(), Scalar.all(0.0));
@@ -103,6 +106,9 @@ public class Morph {
         tRectMatF.fromList(tRect);
         applyAffineTransform(warpImage1, img1Rect, t1RectMat, tRectMatF);
         applyAffineTransform(warpImage2, img2Rect, t2RectMat, tRectMatF);
+
+
+        //Calculates the weight of each rect and applies the mask
         Mat imgRect = new Mat(warpImage1.rows(), warpImage1.cols(), warpImage1.type(), Scalar.all(0));
         Mat imgTemp = new Mat(warpImage1.rows(), warpImage1.cols(), warpImage1.type(), Scalar.all(0));
         Core.multiply(warpImage1, new Scalar(1.0 - alpha, 1.0 - alpha, 1.0 - alpha), imgRect);
@@ -110,8 +116,8 @@ public class Morph {
         Core.add(imgRect, imgTemp, imgRect);
         Core.multiply(imgRect, mask, imgRect);
         Mat imgTemp2 = new Mat(mask.rows(), mask.cols(), mask.type(), Scalar.all(0));
-        Mat allones = new Mat(mask.rows(), mask.cols(), mask.type(), Scalar.all(1.0));
-        Core.subtract(allones, mask, imgTemp2);
+        Mat allOnes = new Mat(mask.rows(), mask.cols(), mask.type(), Scalar.all(1.0));
+        Core.subtract(allOnes, mask, imgTemp2);
         Core.bitwise_or(img.submat(r), imgRect, img.submat(r));
     }
 
@@ -181,13 +187,11 @@ public class Morph {
 
         }
 
-        /* RETURNS AN IMAGE TO THE APP */
-
+        // Returns the bitmap to the app
         imgMorph.convertTo(imgMorph, CvType.CV_8U);
         final Bitmap bitmap = Bitmap.createBitmap(img2.cols(), img2.rows(), Bitmap.Config.RGB_565);
         Utils.matToBitmap(imgMorph, bitmap);
         return bitmap;
-
     }
 
 }
