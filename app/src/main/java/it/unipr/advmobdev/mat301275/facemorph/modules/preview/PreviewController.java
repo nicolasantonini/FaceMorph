@@ -7,6 +7,7 @@ import java.lang.ref.WeakReference;
 import it.unipr.advmobdev.mat301275.facemorph.modules.bluetooth.BluetoothCallback;
 import it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraCallback;
 import it.unipr.advmobdev.mat301275.facemorph.modules.result.ResultAttachment;
+import it.unipr.advmobdev.mat301275.facemorph.opencv.Utilities;
 
 
 public class PreviewController {
@@ -71,7 +72,8 @@ public class PreviewController {
                 @Override
                 public void bleRetrieveSuccess(Bitmap bitmap) {
                     fragment.popFragment();
-                    ResultAttachment attachment = new ResultAttachment(userBitmap, bitmap);
+                    Bitmap resizedBitmap = Utilities.resizeBitmap(bitmap, userBitmap);
+                    ResultAttachment attachment = new ResultAttachment(userBitmap, resizedBitmap);
                     fragment.navigateToResult(attachment);
                     //fragment.debugShowImage(bitmap);
                 }

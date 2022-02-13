@@ -19,4 +19,8 @@ public class Utilities {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
+    public static Bitmap resizeBitmap(Bitmap src, Bitmap dst) {
+        return Bitmap.createScaledBitmap(src, dst.getWidth(), dst.getHeight(), true);
+    }
+
 }

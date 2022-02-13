@@ -14,7 +14,7 @@ public class ResultController {
     private WeakReference<ResultFragment> weakFragment = null;
     private ResultAttachment attachment;
 
-    private double lastAlpha = 0.5;
+    private double lastAlpha = 0.0;
     private double lastTriangles = 100.0;
 
     MorphConfiguration configuration;

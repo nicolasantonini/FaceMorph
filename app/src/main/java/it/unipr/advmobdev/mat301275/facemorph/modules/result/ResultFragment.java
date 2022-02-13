@@ -66,7 +66,7 @@ public class ResultFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         alphaSlider = (Slider) getView().findViewById(R.id.alpha_slider);
-        alphaSlider.setValue(0.50f);
+        alphaSlider.setValue(0.00f);
         alphaSlider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
             @Override
             public void onStartTrackingTouch(@NonNull Slider slider) {
