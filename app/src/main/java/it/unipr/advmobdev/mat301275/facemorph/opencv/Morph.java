@@ -221,7 +221,9 @@ public class Morph {
 
         Log.i("CIAONE_007", img.submat(r).get(0, 0)[0] + " " + img.submat(r).get(0, 0)[1] + " " + img.submat(r).get(0, 0)[2]);
 
-        Core.add(img.submat(r), imgRect, img.submat(r));
+
+        Core.bitwise_or(img.submat(r), imgRect, img.submat(r));
+        //Core.add(img.submat(r), imgRect, img.submat(r));
         Log.i("CIAONE_008", img.submat(r).get(0, 0)[0] + " " + img.submat(r).get(0, 0)[1] + " " + img.submat(r).get(0, 0)[2]);
 
 
