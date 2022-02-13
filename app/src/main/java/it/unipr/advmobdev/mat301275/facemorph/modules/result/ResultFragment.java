@@ -13,7 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.slider.LabelFormatter;
 import com.google.android.material.slider.Slider;
+
+import java.text.DecimalFormat;
 
 import it.unipr.advmobdev.mat301275.facemorph.R;
 
@@ -78,6 +81,15 @@ public class ResultFragment extends Fragment {
                 controller.alphaChanged(slider.getValue(), getContext());
             }
         });
+        alphaSlider.setLabelFormatter(new LabelFormatter() {
+            @NonNull
+            @Override
+            public String getFormattedValue(float value) {
+                DecimalFormat df = new DecimalFormat();
+                df.setMaximumFractionDigits(2);
+                return ("Alpha: " + df.format(value));
+            }
+        });
 
         trianglesSlider = (Slider) getView().findViewById(R.id.triangles_slider);
         trianglesSlider.setValue(100.0f);
@@ -90,6 +102,14 @@ public class ResultFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
                 controller.trianglesChanged(slider.getValue(), getContext());
+            }
+        });
+
+        trianglesSlider.setLabelFormatter(new LabelFormatter() {
+            @NonNull
+            @Override
+            public String getFormattedValue(float value) {
+                return ("% of triangles: " + (int) value);
             }
         });
 
