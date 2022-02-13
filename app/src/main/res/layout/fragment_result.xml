@@ -40,12 +40,29 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/result_title"
-        app:layout_constraintBottom_toTopOf="@id/alpha_slider"
+        app:layout_constraintBottom_toTopOf="@id/triangles_slider"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="32dp">
     </ImageView>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/triangles_slider"
+        android:layout_width="0dp"
+        android:layout_height="54dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/alpha_slider"
+        android:backgroundTint="@color/blue"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginLeft="32dp"
+        android:valueFrom="0.0"
+        android:valueTo="100.0"
+        >
+
+    </com.google.android.material.slider.Slider>
 
     <com.google.android.material.slider.Slider
         android:id="@+id/alpha_slider"
@@ -55,12 +72,11 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:backgroundTint="@color/blue"
-        android:text="@string/continue_with_bluetooth"
         android:layout_marginBottom="32dp"
         android:layout_marginRight="32dp"
         android:layout_marginLeft="32dp"
         android:valueFrom="0.0"
-        android:valueTo="999.0"
+        android:valueTo="1.0"
         >
 
     </com.google.android.material.slider.Slider>

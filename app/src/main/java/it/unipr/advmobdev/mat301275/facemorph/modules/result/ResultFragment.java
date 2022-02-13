@@ -25,7 +25,8 @@ import it.unipr.advmobdev.mat301275.facemorph.R;
 public class ResultFragment extends Fragment {
 
     ResultController controller = new ResultController(this);
-    private Slider slider;
+    private Slider alphaSlider;
+    private Slider trianglesSlider;
     private ImageView resultImageView;
 
     public ResultFragment() {
@@ -64,9 +65,9 @@ public class ResultFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        slider = (Slider) getView().findViewById(R.id.alpha_slider);
-        slider.setValue(50.0f);
-        slider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+        alphaSlider = (Slider) getView().findViewById(R.id.alpha_slider);
+        alphaSlider.setValue(0.50f);
+        alphaSlider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
             @Override
             public void onStartTrackingTouch(@NonNull Slider slider) {
 
@@ -78,7 +79,23 @@ public class ResultFragment extends Fragment {
             }
         });
 
+        trianglesSlider = (Slider) getView().findViewById(R.id.triangles_slider);
+        trianglesSlider.setValue(100.0f);
+        trianglesSlider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+            @Override
+            public void onStartTrackingTouch(@NonNull Slider slider) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(@NonNull Slider slider) {
+                controller.trianglesChanged(slider.getValue(), getContext());
+            }
+        });
+
         resultImageView = (ImageView) getView().findViewById(R.id.result_image_view);
+
+        controller.viewCreated(getContext());
 
     }
 
