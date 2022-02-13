@@ -240,7 +240,7 @@ public class BleHost {
             index += 1;
             charTx.setValue(nextSlice);
             try {
-                Thread.sleep(35);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

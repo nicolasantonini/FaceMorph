@@ -236,7 +236,7 @@ public class BleGuest {
                                 this.cancel();
                             }
                         }
-                    }, 50, 50);
+                    }, 66, 66);
                 }
             }
         }
