@@ -10,14 +10,22 @@ import com.google.android.gms.common.util.IOUtils;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
+import org.opencv.core.DMatch;
+import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfFloat6;
+import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.features2d.DescriptorExtractor;
+import org.opencv.features2d.DescriptorMatcher;
+import org.opencv.features2d.FeatureDetector;
+import org.opencv.features2d.Features2d;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Subdiv2D;
@@ -28,6 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import it.unipr.advmobdev.mat301275.facemorph.R;
@@ -239,7 +249,83 @@ public class Morph {
         byte[] bytes2 = buffer2.toByteArray();
         Mat img2 = imdecode(new MatOfByte(bytes2), CV_LOAD_IMAGE_UNCHANGED);
         Imgproc.cvtColor(img2, img2, Imgproc.COLOR_BGR2RGB);
+
+
         /* ******************** */
+
+        int metodo= FeatureDetector.HARRIS;
+        int metodoDescriptor= DescriptorExtractor.ORB;
+        int maximumNumberOfMatches=100;
+        Mat greyImage=new Mat();
+        Mat greyImageToMatch=new Mat();
+        MatOfKeyPoint keyPoints=new MatOfKeyPoint();
+        MatOfKeyPoint keyPointsToMatch=new MatOfKeyPoint();
+        Imgproc.cvtColor(img1, greyImage, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.cvtColor(img2, greyImageToMatch, Imgproc.COLOR_RGB2GRAY);
+        FeatureDetector detector=FeatureDetector.create(metodo);
+        detector.detect(greyImage, keyPoints);
+        detector.detect(greyImageToMatch, keyPointsToMatch);
+        DescriptorExtractor dExtractor = DescriptorExtractor.create(metodoDescriptor);
+        Mat descriptors=new Mat();
+        Mat descriptorsToMatch=new Mat();
+        dExtractor.compute(greyImage, keyPoints, descriptors);
+        dExtractor.compute(greyImageToMatch, keyPointsToMatch, descriptorsToMatch);
+
+        List<KeyPoint> keyPointsList = keyPoints.toList();
+        List<KeyPoint> keyPointsList2 = keyPointsToMatch.toList();
+
+        DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE);
+        MatOfDMatch matches=new MatOfDMatch();
+        matcher.match(descriptorsToMatch,descriptors,matches);
+        ArrayList<DMatch> goodMatches=new ArrayList<DMatch>();
+        List<DMatch> allMatches=matches.toList();
+        Collections.sort(allMatches, (match2, match1) -> {
+            float distance = match2.distance - match1.distance;
+            return (int) (distance);
+        });
+        for (int i = 0; i < maximumNumberOfMatches; i++ )
+            goodMatches.add(allMatches.get(i));
+        MatOfDMatch goodEnough=new MatOfDMatch();
+        goodEnough.fromList(goodMatches);
+
+
+        /* Devo filtrare i matches:
+        *
+        * Ottengo ogni match
+        *   Ottengo ogni coppia di keypoint ad esso associato
+        *       Calcolo la distanza tra le coordinate dei due keypoint
+        *           Se < DIST_MAX : aggiungo alla lista dei match filtrati
+        * */
+        ArrayList<DMatch> selectedMatches = new ArrayList<DMatch>();
+        for (DMatch goodMatch: goodMatches) {
+            KeyPoint kp1 = keyPointsList.get(goodMatch.trainIdx);
+            KeyPoint kp2 = keyPointsList2.get(goodMatch.queryIdx);
+            Point p1 = kp1.pt;
+            Point p2 = kp2.pt;
+
+            double distance = Math.sqrt((p2.y - p1.y) * (p2.y - p1.y) + (p2.x - p1.x) * (p2.x - p1.x));
+            if (distance < 50.0) {
+                selectedMatches.add(goodMatch);
+            }
+
+        }
+
+        MatOfDMatch selectedMatchs = new MatOfDMatch();
+        selectedMatchs.fromList(selectedMatches);
+
+        Mat finalImg=new Mat();
+        Features2d.drawMatches(greyImageToMatch, keyPointsToMatch, greyImage,
+                keyPoints, selectedMatchs, finalImg, Scalar.all(-1), Scalar.all(-1),
+                new MatOfByte(), Features2d.DRAW_RICH_KEYPOINTS +
+                        Features2d.NOT_DRAW_SINGLE_POINTS);
+
+        final Bitmap bitmap = Bitmap.createBitmap(finalImg.cols(), finalImg.rows(), Bitmap.Config.RGB_565);
+        Utils.matToBitmap(finalImg, bitmap);
+        callback.imageCalcolated(bitmap);
+        return;
+        /* ******************** */
+
+        /*
 
         img1.convertTo(img1, CvType.CV_32F);
         img2.convertTo(img2, CvType.CV_32F);
@@ -294,6 +380,8 @@ public class Morph {
 
         /* RETURNS AN IMAGE TO THE APP */
 
+       /*
+
         imgMorph.convertTo(imgMorph, CvType.CV_8U);
 
 
@@ -302,6 +390,7 @@ public class Morph {
         final Bitmap bitmap = Bitmap.createBitmap(img2.cols(), img2.rows(), Bitmap.Config.RGB_565);
         Utils.matToBitmap(imgMorph, bitmap);
         callback.imageCalcolated(bitmap);
+        */
     }
 
 }
