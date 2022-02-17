@@ -9,7 +9,6 @@ import org.opencv.android.OpenCVLoader;
 
 import java.lang.ref.WeakReference;
 
-import it.unipr.advmobdev.mat301275.facemorph.authentication.AuthenticationManager;
 
 public class SplashController {
 
@@ -48,11 +47,9 @@ public class SplashController {
     private void navigate() {
         SplashFragment fragment = weakFragment.get();
         if (fragment != null) {
-            if (AuthenticationManager.getInstance().isUserSignedIn()) {
+
                 fragment.navigateToHome();
-            } else {
-                fragment.navigateToLogin();
-            }
+
         }
     }
 

@@ -6,7 +6,6 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
-import it.unipr.advmobdev.mat301275.facemorph.authentication.AuthenticationManager;
 import it.unipr.advmobdev.mat301275.facemorph.entities.UserImage;
 import it.unipr.advmobdev.mat301275.facemorph.modules.camera.CameraCallback;
 import it.unipr.advmobdev.mat301275.facemorph.modules.gallery.GalleryCallback;
