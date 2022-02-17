@@ -36,8 +36,6 @@ public class HomeFragment extends Fragment {
     HomeController controller = new HomeController(this);
 
     private FloatingActionButton cameraButton = null;
-    private FloatingActionButton galleryButton = null;
-    private FloatingActionButton settingsButton = null;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -73,14 +71,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         cameraButton = (FloatingActionButton) getView().findViewById(R.id.camera_button);
-        galleryButton = (FloatingActionButton) getView().findViewById(R.id.gallery_button);
-        settingsButton = (FloatingActionButton) getView().findViewById(R.id.settings_button);
-
         cameraButton.setOnClickListener(v -> controller.cameraPressed());
-        galleryButton.setOnClickListener(v -> controller.galleryPressed());
-        settingsButton.setOnClickListener(v -> controller.settingsPressed());
     }
 
     public void navigateToCamera(CameraCallback callback) {

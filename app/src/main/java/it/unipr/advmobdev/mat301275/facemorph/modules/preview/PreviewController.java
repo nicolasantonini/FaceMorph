@@ -37,7 +37,8 @@ public class PreviewController {
                 @Override
                 public void imageTaken(Bitmap bitmap) {
                     fragment.popFragment();
-                    ResultAttachment attachment = new ResultAttachment(userBitmap, bitmap);
+                    Bitmap resizedBitmap = Utilities.resizeBitmap(bitmap, userBitmap);
+                    ResultAttachment attachment = new ResultAttachment(userBitmap, resizedBitmap);
                     fragment.navigateToResult(attachment);
                 }
 
@@ -54,7 +55,8 @@ public class PreviewController {
         if (fragment != null) {
             fragment.navigateToGallery(bitmap -> {
                 fragment.popFragment();
-                ResultAttachment attachment = new ResultAttachment(userBitmap, bitmap);
+                Bitmap resizedBitmap = Utilities.resizeBitmap(bitmap, userBitmap);
+                ResultAttachment attachment = new ResultAttachment(userBitmap, resizedBitmap);
                 fragment.navigateToResult(attachment);
             });
         }

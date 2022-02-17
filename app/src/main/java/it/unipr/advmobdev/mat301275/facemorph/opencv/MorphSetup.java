@@ -22,7 +22,7 @@ public class MorphSetup {
 
     private static int FEATURE_DETECTION_METHOD = FeatureDetector.ORB;
     private static int DESCRIPTOR_EXTRACTOR_METHOD = DescriptorExtractor.ORB;
-    private static int MAX_FEATURES = 10;
+    private static int MAX_FEATURES = 15;
 
     public static MorphConfiguration getConfiguration(Bitmap bitmap1, Bitmap bitmap2) {
         //Gets a Mat from the Bitmap of the image 1
@@ -85,9 +85,29 @@ public class MorphSetup {
             Point p1 = kp1.pt;
             Point p2 = kp2.pt;
             double distance = Math.sqrt((p2.y - p1.y) * (p2.y - p1.y) + (p2.x - p1.x) * (p2.x - p1.x));
-            if (distance < ( (double) bitmap1.getWidth() / 3.0 )) {
-                points1.add(p1);
-                points2.add(p2);
+            if (distance < ( (double) Math.min(bitmap1.getWidth(), bitmap1.getHeight()) / 5.0 )) {
+                //Filters points too close to each others
+                Boolean passed = true;
+                for (Point p: points1) {
+                    double d = Math.sqrt((p1.y - p.y) * (p1.y - p.y) + (p1.x - p.x) * (p1.x - p.x));
+                    if (d < 10.0) {
+                        passed = false;
+                    }
+                }
+
+                for (Point p: points2) {
+                    double d = Math.sqrt((p2.y - p.y) * (p2.y - p.y) + (p2.x - p.x) * (p2.x - p.x));
+                    if (d < 10.0) {
+                        passed = false;
+                    }
+                }
+
+                if (passed) {
+
+                    points1.add(p1);
+                    points2.add(p2);
+                }
+
             }
         }
 

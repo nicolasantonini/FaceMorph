@@ -26,4 +26,5 @@
     <string name="host">Host</string>
     <string name="cancel">Cancel</string>
     <string name="result">Result</string>
+    <string name="select_from_storage">Select from storage</string>
 </resources>

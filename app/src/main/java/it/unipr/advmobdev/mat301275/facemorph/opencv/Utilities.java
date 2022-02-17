@@ -23,4 +23,8 @@ public class Utilities {
         return Bitmap.createScaledBitmap(src, dst.getWidth(), dst.getHeight(), true);
     }
 
+    public static Bitmap resizeBitmapTo(Bitmap src, int width, int height) {
+        return Bitmap.createScaledBitmap(src, width, height, true);
+    }
+
 }

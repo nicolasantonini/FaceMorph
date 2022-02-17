@@ -34,14 +34,14 @@ public class GalleryController {
     public void viewCreated() {
         GalleryFragment fragment = weakFragment.get();
         if (fragment != null) {
-            fragment.displayToast("Unavailable");
+
         }
     }
 
     public void addPhotoClicked() {
         GalleryFragment fragment = weakFragment.get();
         if (fragment != null) {
-            fragment.displayToast("Unavailable");
+
         }
     }
 
