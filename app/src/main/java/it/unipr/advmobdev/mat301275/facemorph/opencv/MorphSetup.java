@@ -20,9 +20,9 @@ import java.util.List;
 
 public class MorphSetup {
 
-    private static int FEATURE_DETECTION_METHOD = FeatureDetector.ORB;
+    private static int FEATURE_DETECTION_METHOD = FeatureDetector.FAST;
     private static int DESCRIPTOR_EXTRACTOR_METHOD = DescriptorExtractor.ORB;
-    private static int MAX_FEATURES = 15;
+    private static int MAX_FEATURES = 25;
 
     public static MorphConfiguration getConfiguration(Bitmap bitmap1, Bitmap bitmap2) {
         //Gets a Mat from the Bitmap of the image 1
